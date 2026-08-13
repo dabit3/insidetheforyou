@@ -1,6 +1,10 @@
 // Fetches popular programming posts from X via the xAI API (x_search tool)
 // and writes them to src/data/tweets.json for the ActionEffects section.
 //
+// Two requests run in parallel:
+//   1. A pinned request that always fetches one post from each REQUIRED_HANDLES account.
+//   2. A general request for a diverse set of popular programming posts.
+//
 // Usage: npm run fetch:tweets  (requires XAI_API_KEY in .env)
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
@@ -8,6 +12,9 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
+
+// These accounts appear in every refresh.
+const REQUIRED_HANDLES = ['theo', 'ThePrimeagen', 'maria_rcks', 'jaredpalmer', 'markfenner']
 
 function loadApiKey() {
   if (process.env.XAI_API_KEY) return process.env.XAI_API_KEY
@@ -17,7 +24,20 @@ function loadApiKey() {
   return match[1].trim()
 }
 
-const PROMPT = `Use X search to find 30 popular recent X posts about programming and software engineering. Run several different searches to cover a DIVERSE set of topics, for example:
+const JSON_SPEC = `Output ONLY a JSON array, no markdown fences, no commentary. Each element must have these keys:
+- "name": author display name
+- "handle": author handle with @
+- "text": the exact post text
+- "date": short date like "Aug 12"
+- "likes": number
+- "replies": number
+- "reposts": number
+- "views": number
+- "url": the direct link to the post, like "https://x.com/handle/status/123456789"
+
+Use the real engagement numbers and the real status URLs from the posts. Do not invent URLs.`
+
+const GENERAL_PROMPT = `Use X search to find 30 popular recent X posts about programming and software engineering. Run several different searches to cover a DIVERSE set of topics, for example:
 - AI and coding agents
 - web development, JavaScript, TypeScript, React
 - systems programming, Rust, Go, C, Zig
@@ -39,23 +59,20 @@ Requirements for each post:
 - no meme aggregator accounts (for example, no ProgrammerHumor accounts)
 - no offensive content
 
-Output ONLY a JSON array, no markdown fences, no commentary. Each element must have these keys:
-- "name": author display name
-- "handle": author handle with @
-- "text": the exact post text
-- "date": short date like "Aug 12"
-- "likes": number
-- "replies": number
-- "reposts": number
-- "views": number
-- "url": the direct link to the post, like "https://x.com/handle/status/123456789"
+${JSON_SPEC}`
 
-Use the real engagement numbers and the real status URLs from the posts. Do not invent URLs.`
+const REQUIRED_PROMPT = `Use X search to find the single most popular RECENT post from each of these X accounts: ${REQUIRED_HANDLES.map((h) => `@${h}`).join(', ')}.
 
-async function main() {
-  const apiKey = loadApiKey()
-  console.log('Asking Grok to search X for popular programming posts...')
+Requirements for each post:
+- a standalone TEXT post from that account, not a reply and not a repost
+- written in English
+- text under 280 characters
+- pick the post with the most likes from roughly the last two weeks
+- exactly one post per account
 
+${JSON_SPEC}`
+
+async function askGrok(apiKey, prompt, tool) {
   const res = await fetch('https://api.x.ai/v1/responses', {
     method: 'POST',
     headers: {
@@ -64,8 +81,8 @@ async function main() {
     },
     body: JSON.stringify({
       model: 'grok-4.6',
-      input: [{ role: 'user', content: PROMPT }],
-      tools: [{ type: 'x_search' }],
+      input: [{ role: 'user', content: prompt }],
+      tools: [tool],
     }),
   })
 
@@ -90,12 +107,15 @@ async function main() {
   const start = jsonText.indexOf('[')
   const end = jsonText.lastIndexOf(']')
   if (start === -1 || end === -1) throw new Error(`No JSON array in output:\n${raw}`)
+  return JSON.parse(jsonText.slice(start, end + 1))
+}
 
-  const posts = JSON.parse(jsonText.slice(start, end + 1))
+function normalize(items, minLikes) {
+  return items
     .filter(
       (p) =>
         p && typeof p.text === 'string' && p.text.length > 0 && p.text.length <= 300 &&
-        typeof p.likes === 'number' && p.likes >= 100 &&
+        typeof p.likes === 'number' && p.likes >= minLikes &&
         typeof p.name === 'string' && typeof p.handle === 'string'
     )
     .map((p) => ({
@@ -112,14 +132,82 @@ async function main() {
           ? p.url
           : '',
     }))
-    .slice(0, 30)
+}
 
-  if (posts.length === 0) throw new Error(`No valid posts parsed from output:\n${raw}`)
+// Verify each post against X's public syndication API. This confirms that the
+// tweet exists and returns the author's real profile picture. Posts without a
+// working tweet URL or a profile picture are dropped.
+function tweetIdFromUrl(url) {
+  const m = url.match(/status\/(\d+)/)
+  return m ? m[1] : null
+}
+
+function syndicationToken(id) {
+  return ((Number(id) / 1e15) * Math.PI).toString(36).replace(/(0+|\.)/g, '')
+}
+
+async function enrich(post) {
+  const id = post.url ? tweetIdFromUrl(post.url) : null
+  if (!id) return null
+  try {
+    const res = await fetch(
+      `https://cdn.syndication.twimg.com/tweet-result?id=${id}&token=${syndicationToken(id)}`
+    )
+    if (!res.ok) return null
+    const t = await res.json()
+    if (t?.__typename === 'TweetTombstone' || !t?.user?.profile_image_url_https) return null
+    return {
+      ...post,
+      name: t.user.name || post.name,
+      handle: `@${t.user.screen_name || post.handle.replace(/^@/, '')}`,
+      avatar: t.user.profile_image_url_https.replace('_normal', '_400x400'),
+      likes: typeof t.favorite_count === 'number' ? t.favorite_count : post.likes,
+      replies: typeof t.conversation_count === 'number' ? t.conversation_count : post.replies,
+    }
+  } catch {
+    return null
+  }
+}
+
+async function verifyPosts(posts) {
+  const enriched = await Promise.all(posts.map(enrich))
+  const kept = enriched.filter(Boolean)
+  posts.forEach((p, i) => {
+    if (!enriched[i]) console.warn(`Dropped ${p.handle}: tweet or profile picture not found`)
+  })
+  return kept
+}
+
+async function main() {
+  const apiKey = loadApiKey()
+  console.log('Asking Grok to search X for pinned accounts and popular programming posts...')
+
+  const [requiredRaw, generalRaw] = await Promise.all([
+    askGrok(apiKey, REQUIRED_PROMPT, { type: 'x_search', allowed_x_handles: REQUIRED_HANDLES }),
+    askGrok(apiKey, GENERAL_PROMPT, { type: 'x_search' }),
+  ])
+
+  // Pinned posts keep any like count; general posts need at least 100 likes.
+  const required = normalize(requiredRaw, 1)
+  const requiredHandles = new Set(required.map((p) => p.handle.toLowerCase()))
+  const general = normalize(generalRaw, 100).filter(
+    (p) => !requiredHandles.has(p.handle.toLowerCase())
+  )
+
+  const posts = await verifyPosts([...required, ...general].slice(0, 40))
+  if (posts.length === 0) throw new Error('No valid posts parsed from either request')
+
+  const missing = REQUIRED_HANDLES.filter(
+    (h) => !requiredHandles.has(`@${h.toLowerCase()}`)
+  )
+  if (missing.length > 0) {
+    console.warn(`Warning: no post found for: ${missing.map((h) => `@${h}`).join(', ')}`)
+  }
 
   const outPath = join(root, 'src', 'data', 'tweets.json')
   mkdirSync(dirname(outPath), { recursive: true })
   writeFileSync(outPath, JSON.stringify(posts, null, 2) + '\n')
-  console.log(`Wrote ${posts.length} posts to src/data/tweets.json`)
+  console.log(`Wrote ${posts.length} posts (${required.length} pinned) to src/data/tweets.json`)
   for (const p of posts) console.log(`  ${p.handle} (${p.likes} likes): ${p.text.slice(0, 60)}...`)
 }
 

@@ -78,7 +78,7 @@ export function ScoreLab() {
         </p>
       </Reveal>
 
-      <div style={{ marginTop: 48, display: 'flex', gap: 10, flexWrap: 'wrap', maxWidth: 820 }}>
+      <div className="aura-row" style={{ marginTop: 48 }}>
         <button className="aura-btn good" onClick={maxAura}>
           Max aura <span style={{ opacity: 0.6 }}>↑</span>
         </button>
@@ -90,7 +90,7 @@ export function ScoreLab() {
         </button>
       </div>
 
-      <div style={{ marginTop: 16, display: 'flex', gap: 10, flexWrap: 'wrap', maxWidth: 820 }}>
+      <div className="pill-grid" style={{ marginTop: 16 }}>
         {ACTIONS.map((a) => (
           <button
             key={a.id}
@@ -110,7 +110,7 @@ export function ScoreLab() {
       <div
         key={`card-${auraKey}`}
         className={aura ? `score-card aura-${aura}` : 'score-card'}
-        style={{ marginTop: 40, padding: 32, maxWidth: 820 }}
+        style={{ marginTop: 40, maxWidth: 820 }}
       >
         <span className="tag mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.6 }}>
           Post score
@@ -120,8 +120,7 @@ export function ScoreLab() {
             key={score}
             initial={{ opacity: 0.4, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            className="display"
-            style={{ fontSize: 56 }}
+            className="display score-value"
           >
             {score > 0 ? '+' : ''}
             {Number(score.toFixed(2))}

@@ -16,59 +16,14 @@ const NAV = [
 
 function Nav() {
   return (
-    <div
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        background: 'var(--paper)',
-        borderBottom: '1px solid var(--line-light)',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 1200,
-          margin: '0 auto',
-          display: 'flex',
-          alignItems: 'stretch',
-          flexWrap: 'wrap',
-          borderLeft: '1px solid var(--line-light)',
-          borderRight: '1px solid var(--line-light)',
-        }}
-      >
-        <a
-          href="#top"
-          className="mono"
-          style={{
-            padding: '14px 20px',
-            fontSize: 12,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            fontWeight: 600,
-            textDecoration: 'none',
-            borderRight: '1px solid var(--line-light)',
-          }}
-        >
+    <div className="nav-bar">
+      <div className="nav-inner">
+        <a href="#top" className="mono nav-brand">
           insidetheforyou
         </a>
         <div style={{ flex: 1 }} />
         {NAV.map(([label, href]) => (
-          <a
-            key={href}
-            href={href}
-            className="mono nav-link"
-            style={{
-              padding: '14px 16px',
-              fontSize: 11,
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-              borderLeft: '1px solid var(--line-light)',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
+          <a key={href} href={href} className="mono nav-link">
             {label}
           </a>
         ))}
@@ -550,7 +505,7 @@ function DeepDive() {
 function Footer() {
   return (
     <footer className="section dark" style={{ borderBottom: 'none' }}>
-      <div className="section-inner" style={{ padding: '64px 48px' }}>
+      <div className="section-inner footer-inner">
         <div
           style={{
             display: 'flex',
@@ -564,7 +519,7 @@ function Footer() {
             INSIDETHEFORYOU
           </span>
           <div style={{ display: 'flex', gap: 24, alignItems: 'center' }} className="small mono">
-            <a href="https://github.com/dabit3/learn-the-algorithm" target="_blank" rel="noreferrer">
+            <a href="https://github.com/dabit3/insidetheforyou" target="_blank" rel="noreferrer">
               Source code ↗
             </a>
             <a href="https://deepwiki.com/xai-org/x-algorithm/" target="_blank" rel="noreferrer">

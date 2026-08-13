@@ -286,6 +286,7 @@ type RealTweet = {
   reposts: number
   views: number
   url?: string
+  avatar?: string
 }
 
 const FALLBACK_TWEET: RealTweet = {
@@ -301,9 +302,7 @@ const FALLBACK_TWEET: RealTweet = {
 }
 
 const REAL_TWEETS: RealTweet[] =
-  (realTweets as RealTweet[]).filter((t) => t.likes >= 100).length > 0
-    ? (realTweets as RealTweet[]).filter((t) => t.likes >= 100)
-    : [FALLBACK_TWEET]
+  (realTweets as RealTweet[]).length > 0 ? (realTweets as RealTweet[]) : [FALLBACK_TWEET]
 
 const AVATAR_COLORS = ['#6b5b95', '#2a9d8f', '#1d6fa3', '#b5651d', '#7d5ba6', '#3a7d44', '#a34a6f']
 
@@ -329,13 +328,9 @@ function colorOf(handle: string): string {
   return AVATAR_COLORS[h % AVATAR_COLORS.length]
 }
 
-function avatarUrl(handle: string): string {
-  return `https://unavatar.io/x/${handle.replace(/^@/, '')}?fallback=false`
-}
-
-function Avatar({ name, handle }: { name: string; handle: string }) {
+function Avatar({ name, handle, src }: { name: string; handle: string; src?: string }) {
   const [failed, setFailed] = useState(false)
-  if (failed) {
+  if (!src || failed) {
     return (
       <div className="tweet-avatar" style={{ background: colorOf(handle) }}>
         {initialsOf(name)}
@@ -345,7 +340,7 @@ function Avatar({ name, handle }: { name: string; handle: string }) {
   return (
     <img
       className="tweet-avatar"
-      src={avatarUrl(handle)}
+      src={src}
       alt={name}
       width={40}
       height={40}
@@ -361,8 +356,9 @@ export function ActionEffects() {
   // Preload all avatars once so cycling between posts is instant.
   useEffect(() => {
     for (const t of REAL_TWEETS) {
+      if (!t.avatar) continue
       const img = new Image()
-      img.src = avatarUrl(t.handle)
+      img.src = t.avatar
     }
   }, [])
 
@@ -403,7 +399,7 @@ export function ActionEffects() {
               transition={{ duration: 0.2 }}
             >
               <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                <Avatar key={tweet.handle} name={tweet.name} handle={tweet.handle} />
+                <Avatar key={tweet.handle} name={tweet.name} handle={tweet.handle} src={tweet.avatar} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <a
                     className="tweet-link"
