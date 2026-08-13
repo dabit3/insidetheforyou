@@ -45,7 +45,7 @@ export function ScoreLab() {
   const score = selected.reduce((s, a) => s + a.weight, 0)
 
   return (
-    <Section id="scoring" theme="light" eyebrow="Step 4 — Scoring · try it yourself">
+    <Section id="scoring" theme="light" step={5}>
       <Reveal>
         <h2 className="display">
           Not all engagement <span className="dim">is worth the same.</span>

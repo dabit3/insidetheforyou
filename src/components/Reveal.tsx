@@ -26,16 +26,23 @@ export function Section({
   id,
   theme,
   eyebrow,
+  step,
   children,
 }: {
   id?: string
   theme: 'light' | 'dark'
   eyebrow?: string
+  step?: number
   children: ReactNode
 }) {
   return (
     <section id={id} className={`section ${theme}`}>
       <div className="section-inner">
+        {step !== undefined && (
+          <Reveal>
+            <span className="eyebrow eyebrow-num">{step}</span>
+          </Reveal>
+        )}
         {eyebrow && (
           <Reveal>
             <span className="eyebrow">{eyebrow}</span>

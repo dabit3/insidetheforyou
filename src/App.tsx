@@ -3,10 +3,12 @@ import { Reveal, Section } from './components/Reveal'
 import { ScoreLab } from './sections/ScoreLab'
 import { Filters } from './sections/Filters'
 import { Adjustments } from './sections/Adjustments'
+import { Weights } from './sections/Weights'
 
 const NAV = [
   ['Sources', '#sources'],
   ['Signals', '#signals'],
+  ['Weights', '#weights'],
   ['Scoring', '#scoring'],
   ['Filters', '#filters'],
   ['Takeaways', '#takeaways'],
@@ -119,7 +121,7 @@ function Hero() {
 
 function Fresh() {
   return (
-    <Section id="fresh" theme="light" eyebrow="Step 0 — The blank page">
+    <Section id="fresh" theme="light" step={0}>
       <Reveal>
         <h2 className="display">
           Your feed is built <span className="dim">fresh, every single time.</span>
@@ -147,7 +149,6 @@ function Fresh() {
               viewport={{ once: true, margin: '-60px' }}
               transition={{ delay: i * 0.12, duration: 0.5 }}
             >
-              <span className="tag">{String(i + 1).padStart(2, '0')}</span>
               <div className="display" style={{ fontSize: 44 }}>
                 {big}
               </div>
@@ -165,7 +166,7 @@ function Fresh() {
 
 function Sources() {
   return (
-    <Section id="sources" theme="dark" eyebrow="Step 1 — Gathering candidates">
+    <Section id="sources" theme="dark" step={1}>
       <Reveal>
         <h2 className="display">
           Posts come from <span className="dim">two worlds.</span>
@@ -234,7 +235,7 @@ function Signals() {
     'reposted a launch announcement',
   ]
   return (
-    <Section id="signals" theme="light" eyebrow="Step 2 — The main input: you">
+    <Section id="signals" theme="light" step={2}>
       <Reveal>
         <h2 className="display">
           It doesn't read your mind. <span className="dim">It reads your habits.</span>
@@ -290,7 +291,7 @@ function Predictions() {
     ['you say “not interested”', 0.002],
   ]
   return (
-    <Section theme="dark" eyebrow="Step 3 — Prediction">
+    <Section theme="dark" step={3}>
       <Reveal>
         <h2 className="display">
           For every post, one question: <span className="dim">“what would you do with this?”</span>
@@ -340,7 +341,7 @@ function Visibility() {
     ['Drop', 'Never shown to you', 'Blocked authors, policy violations, spam.'],
   ]
   return (
-    <Section theme="dark" eyebrow="Step 5 — The final gate">
+    <Section theme="dark" step={7}>
       <Reveal>
         <h2 className="display">
           Ranking picks the order. <span className="dim">A separate gate decides visibility.</span>
@@ -498,6 +499,7 @@ export default function App() {
       <Sources />
       <Signals />
       <Predictions />
+      <Weights />
       <ScoreLab />
       <Adjustments />
       <Filters />

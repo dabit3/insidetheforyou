@@ -26,7 +26,7 @@ function Bars({ values, labels }: { values: number[]; labels: string[] }) {
 
 export function Adjustments() {
   return (
-    <Section theme="dark" eyebrow="Step 4.5 — After the score, three nudges">
+    <Section theme="dark" step={6}>
       <Reveal>
         <h2 className="display">
           Then the score <span className="dim">gets adjusted.</span>

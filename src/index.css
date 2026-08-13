@@ -86,6 +86,11 @@ body {
   color: var(--muted-on-dark);
 }
 
+.eyebrow.eyebrow-num {
+  font-size: 16px;
+  letter-spacing: 0.08em;
+}
+
 .display {
   font-family: var(--display);
   font-weight: 600;
