@@ -1,53 +1,33 @@
-"use client";
-
-import { useMemo, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { scoreActions, takeaways } from "@/lib/data";
-
-const Reveal = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => {
-  const reduced = useReducedMotion();
-  return <motion.div className={className} initial={reduced ? false : { opacity: 0, y: 12 }} whileInView={reduced ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true, amount: .15 }} transition={{ duration: .5, ease: "easeOut" }}>{children}</motion.div>;
-};
-const Header = ({ eyebrow, title, body, dark = false }: { eyebrow: string; title: string; body?: string; dark?: boolean }) => (
-  <div className={`section-head ${dark ? "dark" : ""}`}><div className="eyebrow">{eyebrow}</div><div><h2>{title}</h2>{body && <p>{body}</p>}</div></div>
-);
+import { Adjustments } from "@/components/sections/Adjustments";
+import { Blending } from "@/components/sections/Blending";
+import { Candidates } from "@/components/sections/Candidates";
+import { Filters } from "@/components/sections/Filters";
+import { Footer } from "@/components/sections/Footer";
+import { Hero } from "@/components/sections/Hero";
+import { Inputs } from "@/components/sections/Inputs";
+import { Pipeline } from "@/components/sections/Pipeline";
+import { Safety } from "@/components/sections/Safety";
+import { Scoring } from "@/components/sections/Scoring";
+import { Takeaways } from "@/components/sections/Takeaways";
+import { ScrollProgress } from "@/components/ui/ScrollProgress";
 
 export default function Home() {
-  const [activeStep, setActiveStep] = useState(0);
-  const [pool, setPool] = useState("Both");
-  const [values, setValues] = useState(scoreActions.map(a => a.value));
-  const [filter, setFilter] = useState(0);
-  const score = useMemo(() => scoreActions.reduce((sum, a, i) => sum + a.weight * values[i] / 100, 0), [values]);
-  const setPreset = (preset: string) => {
-    const next = scoreActions.map(a => a.value);
-    if (preset === "like") next[0] = 100;
-    if (preset === "reply") next[1] = 100;
-    if (preset === "dm") next[5] = 100;
-    if (preset === "report") next[10] = 100;
-    setValues(next);
-  };
-  const steps = [["GATHER","Collect candidate posts from two pools."],["CLEAN","Throw out anything you shouldn’t or wouldn’t want to see."],["PREDICT","Guess how likely you are to each action."],["SCORE & ORDER","Turn those guesses into one number, then sort."],["BLEND","Mix in ads, Who to Follow, and prompts."]];
-  const filters = ["Older than 48 hours","Your own posts","Already shown to you","Accounts you block or mute","Muted keywords","Reposts from accounts you don’t follow","The same post returned twice","Subscriber-only posts","Low-engagement new account post"];
-  return <main>
-    <section className="hero dark"><div className="ghost-code mono">rust_home_mixer_reply_weight · rust_home_mixer_report_weight · rust_home_mixer_candidate_pipeline · rust_home_mixer_dwell_time_weight</div><div className="wrap"><div><div className="eyebrow">THE FOR YOU FEED, EXPLAINED</div><h1>How the X algorithm decides what you see</h1><p className="lede">X publishes the code that builds the For You feed. This is the human version: where posts come from, what the model is predicting about you, and what actually moves a post up or down. No engineering background needed.</p></div><div><div className="statbar">{[["2 SOURCES","posts you follow, plus posts you don’t"],["~30 PREDICTIONS","the chance you take each action"],["1 SCORE","one weighted sum decides the order"],["48 HOURS","nothing older gets in"]].map(([a,b])=><div className="stat" key={a}><strong>{a}</strong><span>{b}</span></div>)}</div><div className="scrollcue mono" style={{marginTop:28}}>↓ scroll to follow the feed</div></div></div></section>
-
-    <section className="section"><div className="wrap"><Header eyebrow="HOW IT WORKS" title="Every refresh rebuilds your feed from scratch" body="Your feed is not a stored list. Each time you pull to refresh, the pipeline runs again in a few hundred milliseconds."/><div className="steps-grid"><div className="step-list">{steps.map(([name,desc],i)=><div className={`step ${activeStep===i?"active":""}`} key={name} onMouseEnter={()=>setActiveStep(i)}><div className="step-num mono">0{i+1}</div><div><h3>{name}</h3><p>{desc}</p></div></div>)}<p className="takeaway">A separate safety system decides whether each surviving post is allowed to be shown at all — that runs after the ranking.</p></div><div className="pipeline"><div className="pipeline-line"/><div className="nodes">{steps.map(([name],i)=><div className={`node ${activeStep===i?"active":""}`} key={name}>{name}</div>)}</div></div></div></div></section>
-
-    <section className="section"><div className="wrap"><Header eyebrow="STEP 1 — CANDIDATES" title="Two pools: people you follow, and everyone else" body="Being followed is not required to reach you. Both pools are ranked by the same model, side by side."/><div className="split"><div className="split-copy"><p style={{fontSize:20,lineHeight:1.4}}>The For You feed starts broad. It gathers recent posts from accounts you follow, then finds promising posts from the rest of X.</p><div className="takeaway">Out-of-network posts are scored with a handicap. A stranger’s post has to predict a stronger reaction to sit above a followed post.</div></div><div className="split-visual"><div className="tabs">{["In-network","Out-of-network","Both"].map(x=><button className={pool===x?"active":""} onClick={()=>setPool(x)} key={x}>{x}</button>)}</div><div className="pool">{(pool==="Both"?["IN-NETWORK","OUT-OF-NETWORK","IN-NETWORK","OUT-OF-NETWORK"]:pool==="In-network"?["IN-NETWORK","IN-NETWORK","IN-NETWORK"]:["OUT-OF-NETWORK","OUT-OF-NETWORK","OUT-OF-NETWORK"]).map((x,i)=><motion.div layout key={`${x}${i}`} className="post-tile"><span className="mono" style={{fontSize:10,color:"#6e6e73"}}>{x}</span><div className="line"/><div className="line short"/></motion.div>)}</div></div></div></div></section>
-
-    <section className="section"><div className="wrap"><Header eyebrow="STEP 1 — INPUTS" title="The main input is what you did recently" body="Before anything is scored, the pipeline loads a picture of you. Your recent action sequence is the most important part: likes, replies, reposts, clicks and lingering."/><div className="matrix">{["Your recent actions","Who you follow","Blocks, mutes and muted keywords","Posts you’ve already been shown","Topics you follow","Your settings and country"].map((x,i)=><Reveal className="matrix-cell" key={x}><div className="icon">{["↗","◎","×","□","◌","≡"][i]}</div><h3>{x}</h3><p>{["The strongest clue for what you’ll do next.","Your graph shapes the first pool of posts.","Hard boundaries the feed respects.","The feed keeps an impression history.","Interests you have chosen to see more of.","Context that changes what is eligible."][i]}</p></Reveal>)}</div><p className="takeaway">Your feed follows your behavior more than your intentions. What you open and dwell on counts, even when you never tap like.</p></div></section>
-
-    <section className="section score dark"><div className="wrap"><Header dark eyebrow="STEP 3 — SCORING" title="One post, about thirty predictions, one number" body="The model predicts a probability for each action you might take. Each action carries a weight. Multiply, add them up, and that sum is the post’s score. Nothing else decides the order."/><div className="formula mono">score = Σ ( weight × probability(action) )</div><div className="score-layout"><div className="score-controls">{["Engagement","Clicks & attention","Author","Negative"].map(group=><div key={group}><div className="group-label">{group}</div>{scoreActions.filter(a=>a.group===group).map(a=>{const i=scoreActions.indexOf(a);return <div className="score-row" key={a.name}><span>{a.name}</span><span className="weight mono">{a.weight > 0?"+":""}{a.weight}</span><><input aria-label={`${a.name} probability`} type="range" min="0" max="100" value={values[i]} onChange={e=>setValues(v=>v.map((n,j)=>j===i?Number(e.target.value):n))}/><div className="contribution"><i style={{width:`${values[i]}%`}}/></div></></div>})}</div>)}</div><div className="score-card"><div className="eyebrow">LIVE SCORE</div><div className="score-number">{score.toFixed(1)}</div><div className="preset-row">{[["like","A post you like"],["reply","A post you reply to"],["dm","A post you DM to a friend"],["report","A post you report"]].map(([id,label])=><button onClick={()=>setPreset(id)} key={id}>{label}</button>)}</div><div className="comparison"><b>Derived comparisons</b><br/>1 report ≈ 468 likes of damage<br/>1 copy-link share ≈ 40 likes</div><p style={{color:"#9999a0",fontSize:12,lineHeight:1.5}}>These are defaults published in the repository and read from a config system, so live values can differ and change over time.</p></div></div></div></section>
-
-    <section className="section"><div className="wrap"><Header eyebrow="STEP 4 — ADJUSTMENTS" title="Then four corrections reshape the order"/><div className="adjust-grid">{[["Author diversity","Each additional post from the same author decays to stop one account taking over your feed.",true],["Out-of-network discount","Posts from accounts you don’t follow are multiplied by 0.75 (0.5 for topic-based ones)."],["New-author boost","Posts from authors with very few impressions get lifted toward a target position."],["Diversity re-rank","A separate service trades a little score for less similarity between neighbors."]].map(([h,p,b])=><div className="adjust" key={h as string}><h3>{h as string}</h3>{b&&<div className="bars"><i/><i/><i/><i/></div>}<p>{p as string}</p></div>)}</div></div></section>
-
-    <section className="section"><div className="wrap"><Header eyebrow="STEP 2 — FILTERS" title="Most candidates never reach the scoring step" body="Before the model spends its time scoring, a long list of hard filters removes posts that cannot appear for you."/><div className="filter-layout"><div className="filter-list">{filters.map((x,i)=><div className={`filter-item ${i<filter?"removed":""}`} key={x}><b className="mono">0{i+1}</b><span>{x}</span></div>)}</div><div><div className="reason"><strong>{filters[Math.min(filter,filters.length-1)]}</strong><span style={{color:"#6e6e73",lineHeight:1.5}}>This candidate is removed before any prediction or score is calculated.</span></div><button className="primary" style={{marginTop:18,padding:"12px 16px",background:"var(--ink)",color:"#fff",border:"1px solid var(--ink)"}} onClick={()=>setFilter(f=>f<filters.length?f+1:0)}>{filter===filters.length?"Reset filters":"Run next filter"} →</button></div></div><p className="takeaway">Two of these explain most complaints. Nothing older than 48 hours can appear, and once a post has been shown to you it will not be shown again.</p></div></section>
-
-    <section className="section dark"><div className="wrap"><Header dark eyebrow="SAFETY" title="Ranking sets the order. A second system decides what’s allowed." body="After the order is fixed, every post is checked for you specifically. Three answers:"/><div className="safety-grid">{[["ALLOW","shown normally"],["INTERSTITIAL","shown behind a tap-through warning, e.g. adult or graphic media"],["DROP","not shown to you"]].map(([h,p])=><div className="safety-cell" key={h}><h3>{h}</h3><p>{p}</p></div>)}</div><p className="takeaway">The first rule that says drop ends the check. Some rules only drop a post when it’s a recommendation from an account you don’t follow. If a post is dropped, replies and quotes hanging off it go too.</p><p style={{color:"#9999a0",fontSize:13,lineHeight:1.5}}>The rules read labels from classifiers for spam, adult content and violent media, plus account-level signals and your own blocks, mutes, settings and country. X also ships an “Under the Hood” report with aggregate stats about labels applied to an account.</p></div></section>
-
-    <section className="section"><div className="wrap"><Header eyebrow="STEP 5 — BLENDING" title="Your feed is not only posts" body="The ranked posts are one ingredient. A blending step interleaves ads, Who to Follow suggestions and prompts. Ads can also nudge nearby posts around for adjacency."/><div className="blend-visual">{["A ranked post","A ranked post","WHO TO FOLLOW","A ranked post","PROMPT","A ranked post"].map((x,i)=><div className={`feed-slot ${x!=="A ranked post"?"special":""}`} key={i}>{x}</div>)}</div></div></section>
-
-    <section className="section"><div className="wrap"><Header eyebrow="TAKEAWAYS" title="Nine things worth remembering"/><div className="takeaway-grid">{takeaways.map(([h,p],i)=><div className="takeaway-card" key={h}><b><span className="mono" style={{fontSize:11,color:"#6e6e73",marginRight:8}}>0{i+1}</span>{h}</b><span>{p}</span></div>)}</div></div></section>
-    <footer className="footer dark"><div className="wrap"><div className="footer-grid"><div><div className="eyebrow">A PLAIN-ENGLISH EXPLAINER</div><p className="fine">Independent explainer built from X’s published code. Values shown are defaults and can change.</p></div><div><h3>Sources</h3><a href="https://github.com/xai-org/x-algorithm">The algorithm repo ↗</a><a href="https://deepwiki.com/xai-org/x-algorithm">DeepWiki ↗</a></div><div><h3>Credits</h3><a href="#">Built with Devin ↗</a></div></div><p className="fine" style={{marginTop:70}}>© {new Date().getFullYear()} — for learning, not prediction.</p></div></footer>
-  </main>;
+  return (
+    <>
+      <ScrollProgress />
+      <main>
+        <Hero />
+        <Pipeline />
+        <Candidates />
+        <Inputs />
+        <Filters />
+        <Scoring />
+        <Adjustments />
+        <Safety />
+        <Blending />
+        <Takeaways />
+      </main>
+      <Footer />
+    </>
+  );
 }
