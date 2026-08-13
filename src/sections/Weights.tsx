@@ -32,9 +32,9 @@ export function Weights() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          Each predicted action carries a fixed weight: a measure of how much the algorithm cares
-          about it. These are the actual values from the open-sourced code. Notice how small the
-          rewards are, and how enormous the punishments.
+          Each predicted action has a fixed weight. The weight shows how much the algorithm cares
+          about that action. These are the real values from the open-source code. The rewards are
+          small, and the punishments are enormous.
         </p>
       </Reveal>
       <div style={{ marginTop: 48, maxWidth: 820 }}>
@@ -49,10 +49,10 @@ export function Weights() {
                 transition={{ delay: i * 0.05, duration: 0.7, ease: 'easeOut' }}
                 style={{
                   height: '100%',
-                  backgroundColor: w >= 0 ? '#0d0d0d' : 'transparent',
+                  backgroundColor: w >= 0 ? 'var(--ink)' : 'transparent',
                   backgroundImage:
                     w < 0
-                      ? 'repeating-linear-gradient(45deg, #0d0d0d 0 6px, transparent 6px 12px)'
+                      ? 'repeating-linear-gradient(45deg, var(--ink) 0 6px, transparent 6px 12px)'
                       : undefined,
                 }}
               />
@@ -63,8 +63,8 @@ export function Weights() {
       </div>
       <Reveal delay={0.2}>
         <p className="small" style={{ marginTop: 24 }}>
-          Bars use a square-root scale so the small weights stay visible. Hatched bars are negative
-          weights, actions the algorithm actively tries to avoid provoking.
+          The bars use a square-root scale so that the small weights stay visible. Hatched bars
+          show negative weights. The algorithm tries to not cause these actions.
         </p>
       </Reveal>
     </Section>

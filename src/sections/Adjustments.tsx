@@ -55,8 +55,8 @@ export function Adjustments() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          The raw score isn't the final word. Three deliberate adjustments shape the feed you
-          actually see:
+          The raw score is not the final word. Three deliberate adjustments shape the feed that
+          you see:
         </p>
       </Reveal>
       <div style={{ marginTop: 48 }} className="cellgrid cols-3">
@@ -64,8 +64,8 @@ export function Adjustments() {
           <span className="tag">Author diversity</span>
           <h3 className="cell-title">No one gets to dominate</h3>
           <p className="small">
-            Each extra post from the same author is halved in score, down to a floor, so one
-            prolific account can't take over your feed.
+            Each extra post from the same author gets half the score, down to a floor. One
+            prolific account cannot take over your feed.
           </p>
           <Bars
             values={[1, 0.5, 0.25, 0.25]}
@@ -77,7 +77,7 @@ export function Adjustments() {
           <span className="tag">Out-of-network discount</span>
           <h3 className="cell-title">Strangers take a haircut</h3>
           <p className="small">
-            Posts from accounts you don't follow are multiplied by 0.75, so discovery has to earn
+            Posts from accounts that you do not follow get multiplied by 0.75. Discovery must earn
             its place against your own network.
           </p>
           <Bars
@@ -90,8 +90,8 @@ export function Adjustments() {
           <span className="tag">New-author boost</span>
           <h3 className="cell-title">Small accounts get a shot</h3>
           <p className="small">
-            Posts from authors with very few impressions get lifted so fresh voices aren't buried
-            by the already-popular.
+            Posts from authors with few impressions get a lift. Fresh voices do not get buried
+            under popular accounts.
           </p>
           <Bars values={[0.4, 0.75]} labels={['before', 'boosted']} />
         </div>

@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 x-algorithm
+SimpleEnglish
+# env
+.env

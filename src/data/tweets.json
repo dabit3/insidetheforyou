@@ -1,0 +1,102 @@
+[
+  {
+    "name": "Emil Kowalski",
+    "handle": "@emilkowalski",
+    "text": "It’s impressive how fast Grok is improving after Cursor acquisition.\n\nIt shows how important good data is for these models and explains why Gemini is struggling at coding since they have no popular harness to get training data from.",
+    "date": "Aug 13",
+    "likes": 1119,
+    "replies": 44,
+    "reposts": 19,
+    "views": 37778
+  },
+  {
+    "name": "Valentin Ignatev",
+    "handle": "@valigo",
+    "text": "I'll agree that AI is good at programming when I see influx of instantly fast, beautiful, and resource-efficient native desktop software.\n\nSo far everything like this comes from dominantly human-driven programming with AI being a helpful tool at best.",
+    "date": "Aug 13",
+    "likes": 225,
+    "replies": 17,
+    "reposts": 3,
+    "views": 4816
+  },
+  {
+    "name": "Suhas",
+    "handle": "@zuess05",
+    "text": "Hot take:\n\nVibe coding is making design more important than code.",
+    "date": "Aug 13",
+    "likes": 221,
+    "replies": 75,
+    "reposts": 14,
+    "views": 9179
+  },
+  {
+    "name": "pc",
+    "handle": "@pcshipp",
+    "text": "Unpopular opinion:\n\nAfter using AI for a year, I’ve forgotten basic coding syntax. AI helps you build faster, but at the same time, it makes you dumber.",
+    "date": "Aug 11",
+    "likes": 576,
+    "replies": 313,
+    "reposts": 26,
+    "views": 56234
+  },
+  {
+    "name": "Pri",
+    "handle": "@solopribuilds",
+    "text": "Hot Take:\n\nVibe coding doesn’t work at scale.",
+    "date": "Aug 11",
+    "likes": 630,
+    "replies": 345,
+    "reposts": 24,
+    "views": 146590
+  },
+  {
+    "name": "The codewali",
+    "handle": "@the_codewala",
+    "text": "Hot take:\n\nThe next great developer might not have a CS degree.",
+    "date": "Aug 9",
+    "likes": 213,
+    "replies": 128,
+    "reposts": 3,
+    "views": 14812
+  },
+  {
+    "name": "Ardent_Dev",
+    "handle": "@ardent__dev",
+    "text": "hot take:\n\nvibe coding only works well if you already know how to code.",
+    "date": "Aug 9",
+    "likes": 253,
+    "replies": 132,
+    "reposts": 17,
+    "views": 12665
+  },
+  {
+    "name": "Suni",
+    "handle": "@suni_code",
+    "text": "Hot take:\n\nThe best developer in 2030 might barely code by hand.",
+    "date": "Aug 9",
+    "likes": 138,
+    "replies": 97,
+    "reposts": 8,
+    "views": 12341
+  },
+  {
+    "name": "Josh",
+    "handle": "@joshmanders",
+    "text": "Unpopular opinion:\n\nI find agentic coding more fun than hand coding.",
+    "date": "Aug 9",
+    "likes": 1162,
+    "replies": 207,
+    "reposts": 51,
+    "views": 74301
+  },
+  {
+    "name": "Ben Sage",
+    "handle": "@ben_sage",
+    "text": "Hot take:\n\nVibe coding will make better apps than traditional coding ever did",
+    "date": "Aug 8",
+    "likes": 134,
+    "replies": 54,
+    "reposts": 3,
+    "views": 7470
+  }
+]

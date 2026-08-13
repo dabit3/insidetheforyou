@@ -1,15 +1,17 @@
-import { motion, useScroll, useSpring } from 'framer-motion'
+import { useState, type ComponentType } from 'react'
+import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
 import { Reveal, Section } from './components/Reveal'
 import { ScoreLab } from './sections/ScoreLab'
 import { Adjustments } from './sections/Adjustments'
 import { Weights } from './sections/Weights'
+import { WeightLab } from './sections/WeightLab'
+import { DemoFeed, ActionEffects } from './sections/DemoFeed'
 
 const NAV = [
-  ['Sources', '#sources'],
-  ['Signals', '#signals'],
-  ['Weights', '#weights'],
   ['Scoring', '#scoring'],
-  ['Takeaways', '#takeaways'],
+  ['Feed', '#feed'],
+  ['Playground', '#playground'],
+  ['Deep dive', '#deepdive'],
 ]
 
 function Nav() {
@@ -81,9 +83,6 @@ function Hero() {
         className="section-inner"
         style={{ minHeight: '82vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
       >
-        <Reveal>
-          <span className="eyebrow">An interactive field guide to the For You feed</span>
-        </Reveal>
         <Reveal delay={0.1}>
           <h1 className="display" style={{ maxWidth: 900, fontSize: 'clamp(42px, 6.5vw, 84px)' }}>
             How X decides
@@ -93,18 +92,18 @@ function Hero() {
         </Reveal>
         <Reveal delay={0.2}>
           <p className="lede">
-            Every time you open the For You feed, an algorithm assembles it from scratch, just for
-            you, in that moment. Scroll to learn how it works, no engineering degree required.
+            Each time you open the For You feed, an algorithm builds it from scratch, just for
+            you. Scroll to learn how it works. You do not need an engineering degree.
           </p>
         </Reveal>
         <Reveal delay={0.35}>
           <div style={{ marginTop: 48, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <a className="boxlink" href="#fresh">
+            <a className="boxlink" href="#scoring">
               Start scrolling ↓
             </a>
             <a
               className="boxlink"
-              href="https://github.com/dabit3/x-algorithm"
+              href="https://github.com/xai-org/x-algorithm"
               target="_blank"
               rel="noreferrer"
             >
@@ -127,9 +126,9 @@ function Fresh() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          There is no pre-made timeline waiting for you. When you open or refresh the app, a system
-          called <span className="mono">Home Mixer</span> runs a pipeline that gathers candidate
-          posts, scores them, and filters them, all within a moment.
+          There is no pre-made timeline that waits for you. When you open or refresh the app, a
+          system called <span className="mono">Home Mixer</span> gathers candidate posts, scores
+          them, and filters them in less than a second.
         </p>
       </Reveal>
       <div style={{ marginTop: 56 }}>
@@ -172,8 +171,8 @@ function Sources() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          Before anything is ranked, the algorithm collects candidates from accounts you follow and
-          from the rest of X, then judges them all with the same model.
+          Before ranking starts, the algorithm collects candidates from accounts that you follow
+          and from the rest of X. Then one model judges them all.
         </p>
       </Reveal>
       <div style={{ marginTop: 48, maxWidth: 760 }}>
@@ -199,8 +198,8 @@ function Sources() {
           </div>
         ))}
         <p className="small" style={{ marginTop: 16 }}>
-          Maximum candidates fetched per source on each refresh: roughly 40% from your follows,
-          60% from discovery, before scoring decides what survives.
+          This is the maximum number of candidates from each source on each refresh: approximately
+          40% from your follows and 60% from discovery. Then scoring decides what survives.
         </p>
       </div>
       <div style={{ marginTop: 40 }} className="cellgrid cols-2">
@@ -217,8 +216,8 @@ function Sources() {
             People you follow
           </h3>
           <p className="small" style={{ marginTop: 8 }}>
-            A live store keeps the most recent posts from every account you follow, ready to serve
-            instantly. This is your familiar circle.
+            A live store keeps the most recent posts from each account that you follow. It serves
+            them instantly. This is your familiar circle.
           </p>
         </motion.div>
         <motion.div
@@ -234,15 +233,15 @@ function Sources() {
             People you don't (yet)
           </h3>
           <p className="small" style={{ marginTop: 8, color: 'inherit', opacity: 0.7 }}>
-            ML retrieval finds posts from strangers whose content looks like things you engage
-            with, by mapping you and every post into the same “taste space” and picking the
-            nearest matches.
+            ML retrieval maps you and each post into the same “taste space”. Then it finds posts
+            from strangers that look like the content you engage with.
           </p>
         </motion.div>
       </div>
       <Reveal delay={0.2}>
         <p className="small" style={{ marginTop: 24 }}>
-          This is why your feed isn't only your follows: discovery is built in, not a bug.
+          This is why your feed is not only your follows. Discovery is a built-in feature, not a
+          bug.
         </p>
       </Reveal>
     </Section>
@@ -268,9 +267,9 @@ function Signals() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          The single most important input to the ranking model is your recent action history: the
-          running sequence of everything you've engaged with lately. The model reads it like a
-          sentence and predicts what you'll do next.
+          The most important input to the ranking model is your recent action history. That is the
+          sequence of everything that you engaged with lately. The model reads it like a sentence
+          and predicts your next action.
         </p>
       </Reveal>
       <div style={{ marginTop: 48, maxWidth: 720 }}>
@@ -299,8 +298,8 @@ function Signals() {
         ))}
         <Reveal delay={0.4}>
           <p className="small" style={{ marginTop: 24 }}>
-            Takeaway: every tap teaches it. Your feed is a mirror of your recent behavior, not a
-            fixed profile of who you are.
+            Each tap teaches the model. Your feed is a mirror of your recent behavior, not a fixed
+            profile of who you are.
           </p>
         </Reveal>
       </div>
@@ -326,8 +325,8 @@ function Predictions() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          A transformer model (the same family of AI behind chatbots) estimates the probability of
-          each action you might take, good and bad, for every candidate post.
+          A transformer model (the same family of AI that powers chatbots) estimates the
+          probability of each action, good and bad, for each candidate post.
         </p>
       </Reveal>
       <div style={{ marginTop: 48, maxWidth: 760 }}>
@@ -349,8 +348,8 @@ function Predictions() {
       </div>
       <Reveal delay={0.3}>
         <p className="small" style={{ marginTop: 24 }}>
-          These are illustrative numbers for one imaginary post. The model produces a full set
-          like this for every candidate, on every refresh.
+          These numbers are examples for one imaginary post. The model produces a full set like
+          this for each candidate on each refresh.
         </p>
       </Reveal>
     </Section>
@@ -359,13 +358,17 @@ function Predictions() {
 
 function Visibility() {
   const rows: [string, string, string][] = [
-    ['Allow', 'Shown normally', 'The default for almost everything.'],
+    ['Allow', 'The post appears normally.', 'This is the default for almost all posts.'],
     [
       'Interstitial',
-      'Hidden behind a warning you can tap through',
-      'Used for things like graphic or adult media.',
+      'The post hides behind a warning that you can tap through.',
+      'X uses this for graphic or adult media.',
     ],
-    ['Drop', 'Never shown to you', 'Blocked authors, policy violations, spam.'],
+    [
+      'Drop',
+      'The post never appears for you.',
+      'This applies to blocked authors, policy violations, and spam.',
+    ],
   ]
   return (
     <Section theme="dark">
@@ -376,8 +379,8 @@ function Visibility() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          After ranking, every post passes a visibility check built from your blocks and mutes plus
-          safety labels other systems attach to posts and accounts. It gives one of three answers:
+          After ranking, each post goes through a visibility check. The check uses your blocks,
+          your mutes, and safety labels from other systems. It gives one of three answers:
         </p>
       </Reveal>
       <div style={{ marginTop: 48 }} className="cellgrid cols-3">
@@ -404,8 +407,8 @@ function Visibility() {
       </div>
       <Reveal delay={0.25}>
         <p className="small" style={{ marginTop: 24 }}>
-          Recommendations from accounts you don't follow face extra, stricter rules: the same
-          post can be shown to a follower but not recommended to a stranger.
+          Recommendations from accounts that you do not follow have stricter rules. The same post
+          can appear for a follower but not for a stranger.
         </p>
       </Reveal>
     </Section>
@@ -416,27 +419,27 @@ function Takeaways() {
   const items: [string, string][] = [
     [
       'Your attention is a vote',
-      'Even lingering on a post (“dwell”) counts. What you spend time on, you get more of.',
+      'Even time spent on a post (“dwell”) counts. You get more of what you spend time on.',
     ],
     [
       'Replies and shares speak loudest',
-      'A reply is worth ~10 likes to the ranker. Sharing a post via DM or copying its link is worth even more.',
+      'A reply is worth approximately 10 likes to the ranker. A share via DM or a copied link is worth even more.',
     ],
     [
       'Negative feedback is powerful',
-      '“Not interested”, mute, and block carry huge negative weights. One report outweighs hundreds of likes. Use them. They work.',
+      '“Not interested”, mute, and block carry large negative weights. One report outweighs hundreds of likes. Use them. They work.',
     ],
     [
       'Your feed resets constantly',
-      'Ranking uses your recent actions, so a few days of different behavior genuinely changes what you see.',
+      'Ranking uses your recent actions. A few days of different behavior changes what you see.',
     ],
     [
       'Following still matters',
-      'Posts from mutual follows get boosted, and out-of-network posts are discounted. Curating who you follow shapes the whole feed.',
+      'Posts from mutual follows get a boost, and out-of-network posts get a discount. The accounts that you follow shape the whole feed.',
     ],
     [
       'Variety is enforced',
-      'Repeated posts from one author decay in score, and similar posts are spread apart on purpose.',
+      'Repeated posts from one author decay in score, and the system spreads similar posts apart on purpose.',
     ],
   ]
   return (
@@ -465,6 +468,75 @@ function Takeaways() {
   )
 }
 
+const SLIDES: [string, ComponentType][] = [
+  ['The pipeline', Fresh],
+  ['Two worlds', Sources],
+  ['Your habits', Signals],
+  ['Predictions', Predictions],
+  ['The price tags', Weights],
+  ['Adjustments', Adjustments],
+  ['The gate', Visibility],
+  ['Takeaways', Takeaways],
+]
+
+function DeepDive() {
+  const [index, setIndex] = useState(0)
+  const [dir, setDir] = useState(1)
+  const count = SLIDES.length
+
+  const go = (n: number) => {
+    const next = ((n % count) + count) % count
+    setDir(next > index || (index === count - 1 && next === 0) ? 1 : -1)
+    setIndex(next)
+    document.getElementById('deepdive')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const ActiveSlide = SLIDES[index][1]
+  const nextLabel = index === count - 1 ? 'Back to the start' : SLIDES[index + 1][0]
+
+  return (
+    <div id="deepdive">
+      <div className="slide-bar">
+        <div className="slide-bar-inner">
+          {SLIDES.map(([label], n) => (
+            <button
+              key={label}
+              className={`slide-tab ${n === index ? 'active' : ''}`}
+              onClick={() => go(n)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, x: 48 * dir }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -48 * dir }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+        >
+          <ActiveSlide />
+        </motion.div>
+      </AnimatePresence>
+      <button className="slide-next" onClick={() => go(index + 1)}>
+        <div className="slide-next-inner">
+          <span
+            className="mono"
+            style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.5 }}
+          >
+            Next up
+          </span>
+          <span className="display" style={{ fontSize: 'clamp(22px, 3vw, 32px)' }}>
+            {nextLabel} {index === count - 1 ? '↺' : '→'}
+          </span>
+        </div>
+      </button>
+    </div>
+  )
+}
+
 function Footer() {
   return (
     <footer className="section dark" style={{ borderBottom: 'none' }}>
@@ -482,7 +554,7 @@ function Footer() {
             INSIDETHEFORYOU
           </span>
           <div style={{ display: 'flex', gap: 24 }} className="small mono">
-            <a href="https://github.com/dabit3/x-algorithm" target="_blank" rel="noreferrer">
+            <a href="https://github.com/xai-org/x-algorithm" target="_blank" rel="noreferrer">
               Source code ↗
             </a>
             <a href="https://deepwiki.com/xai-org/x-algorithm/" target="_blank" rel="noreferrer">
@@ -491,8 +563,8 @@ function Footer() {
           </div>
         </div>
         <p className="small" style={{ marginTop: 24, maxWidth: 640 }}>
-          Weights and behaviors described here come from the open-sourced X algorithm repository
-          (August 2026 snapshot). Values change over time as X runs experiments.
+          The weights and behaviors on this page come from the open-source X algorithm repository
+          (August 2026 snapshot). The values change over time as X runs experiments.
         </p>
       </div>
     </footer>
@@ -511,7 +583,7 @@ export default function App() {
           left: 0,
           right: 0,
           height: 3,
-          background: '#0d0d0d',
+          background: 'var(--ink)',
           mixBlendMode: 'difference',
           transformOrigin: '0 50%',
           scaleX,
@@ -520,15 +592,11 @@ export default function App() {
       />
       <Nav />
       <Hero />
-      <Fresh />
-      <Sources />
-      <Signals />
-      <Predictions />
-      <Weights />
       <ScoreLab />
-      <Adjustments />
-      <Visibility />
-      <Takeaways />
+      <DemoFeed />
+      <ActionEffects />
+      <WeightLab />
+      <DeepDive />
       <Footer />
     </>
   )

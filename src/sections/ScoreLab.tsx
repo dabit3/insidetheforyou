@@ -72,9 +72,9 @@ export function ScoreLab() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          Each predicted action is multiplied by a weight and summed into one score. These are the
-          actual weights from the open-sourced code. Tap the actions you'd take on a post and watch
-          its score move.
+          The model multiplies each predicted action by a weight and adds the results into one
+          score. These are the real weights from the open-source code. Tap the actions that you
+          take on a post and watch the score move.
         </p>
       </Reveal>
 
@@ -107,13 +107,7 @@ export function ScoreLab() {
       <div
         key={`card-${auraKey}`}
         className={aura ? `score-card aura-${aura}` : 'score-card'}
-        style={{
-          marginTop: 40,
-          border: '1px solid var(--line-light)',
-          padding: 32,
-          maxWidth: 820,
-          background: 'var(--white)',
-        }}
+        style={{ marginTop: 40, padding: 32, maxWidth: 820 }}
       >
         <span className="tag mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.6 }}>
           Post score
@@ -136,7 +130,7 @@ export function ScoreLab() {
                 ? 'competes for a spot in your feed'
                 : score === 0
                   ? 'invisible to the ranker'
-                  : 'buried, you will likely never see posts like this'}
+                  : 'buried, you will almost never see posts like this'}
           </span>
         </div>
         <div className="bar-track" style={{ marginTop: 20, height: 14 }}>
@@ -147,17 +141,17 @@ export function ScoreLab() {
             transition={{ type: 'spring', stiffness: 120, damping: 20 }}
             style={{
               height: '100%',
-              backgroundColor: score >= 0 ? '#0d0d0d' : 'transparent',
+              backgroundColor: score >= 0 ? 'var(--ink)' : 'transparent',
               backgroundImage:
                 score < 0
-                  ? 'repeating-linear-gradient(45deg, #0d0d0d 0 6px, transparent 6px 12px)'
+                  ? 'repeating-linear-gradient(45deg, var(--ink) 0 6px, transparent 6px 12px)'
                   : undefined,
             }}
           />
         </div>
         <p className="small" style={{ marginTop: 20 }}>
-          Notice the asymmetry: a single report (−234) cancels out 468 likes (+0.5 each). The
-          algorithm fears annoying you far more than it wants to please you.
+          Notice the asymmetry: one report (−234) cancels 468 likes (+0.5 each). The penalty for
+          one bad experience is far larger than the reward for one good experience.
         </p>
       </div>
     </Section>
