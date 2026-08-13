@@ -1,19 +1,17 @@
-import { Eyebrow } from "../ui/Eyebrow";
+import { SectionShell } from "../ui/SectionShell";
 import { StatBar } from "../ui/StatBar";
 
 export function Hero() {
   return (
-    <section className="hero section-dark">
-      <div className="hero-grid page-grid">
-        <div className="hero-content">
-          <Eyebrow dark>THE FOR YOU FEED, EXPLAINED</Eyebrow>
-          <h1>How the X algorithm decides what you see</h1>
-          <p>
-            X publishes the code that builds the For You feed. This is the human version: where
-            posts come from, what the model is predicting about you, and what actually moves a post
-            up or down. No engineering background needed.
-          </p>
-        </div>
+    <SectionShell
+      className="hero"
+      dark
+      eyebrow="THE FOR YOU FEED, EXPLAINED"
+      title="How the X algorithm decides what you see"
+      body="X publishes the code that builds the For You feed. This is the human version: where posts come from, what the model is predicting about you, and what actually moves a post up or down. No engineering background needed."
+      titleTag="h1"
+    >
+      <div className="hero-grid">
         <div className="hero-side">
           <div className="hero-code mono" aria-hidden="true">
             rust_home_mixer_reply_weight
@@ -41,6 +39,6 @@ export function Hero() {
           <div className="scroll-cue mono">↓ scroll to follow the feed</div>
         </div>
       </div>
-    </section>
+    </SectionShell>
   );
 }

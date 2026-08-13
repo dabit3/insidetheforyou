@@ -6,7 +6,7 @@ import { AnimatedNumber } from "../ui/AnimatedNumber";
 import { SectionShell } from "../ui/SectionShell";
 import { Slider } from "../ui/Slider";
 
-const groups = ["Engagement", "Extra", "Clicks & attention", "Author", "Negative"];
+const groups = ["Engagement", "Clicks & attention", "Author", "Negative"];
 
 export function Scoring() {
   const [values, setValues] = useState(scoreActions.map((action) => action.value));
@@ -16,8 +16,7 @@ export function Scoring() {
       scoreActions.reduce((total, action, index) => {
         if (action.name === "reply")
           return total + (mutual ? 20 : action.weight) * (values[index] / 100);
-        if (action.name === "mutual follow extra reply")
-          return total + (mutual ? action.weight : 0) * (values[index] / 100);
+        if (action.name === "mutual follow extra reply") return total;
         return total + action.weight * (values[index] / 100);
       }, 0),
     [mutual, values],
@@ -48,6 +47,7 @@ export function Scoring() {
               <div className="group-label">{group}</div>
               {scoreActions
                 .filter((action) => action.group === group)
+                .filter((action) => action.name !== "mutual follow extra reply")
                 .map((action) => {
                   const index = scoreActions.indexOf(action);
                   const weight = action.name === "reply" && mutual ? 20 : action.weight;

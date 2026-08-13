@@ -57,7 +57,13 @@ export function Pipeline() {
               <div className="pipeline-nodes">
                 {pipelineSteps.map(([name], index) => (
                   <motion.div
-                    className={`pipeline-node ${active === index ? "node-active" : ""}`}
+                    className={`pipeline-node ${
+                      active === index
+                        ? "node-active"
+                        : index < active
+                          ? "node-passed"
+                          : "node-upcoming"
+                    }`}
                     key={name}
                     animate={{ scale: active === index ? 1.06 : 1 }}
                     transition={{ duration: 0.25 }}

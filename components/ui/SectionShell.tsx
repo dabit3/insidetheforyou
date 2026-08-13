@@ -7,6 +7,8 @@ export function SectionShell({
   children,
   dark = false,
   id,
+  className = "",
+  titleTag = "h2",
 }: {
   eyebrow: string;
   title: string;
@@ -14,16 +16,17 @@ export function SectionShell({
   children?: React.ReactNode;
   dark?: boolean;
   id?: string;
+  className?: string;
+  titleTag?: "h1" | "h2";
 }) {
+  const Heading = titleTag;
   return (
-    <section id={id} className={`section-shell ${dark ? "section-dark" : ""}`}>
+    <section id={id} className={`section-shell ${dark ? "section-dark" : ""} ${className}`.trim()}>
       <div className="page-grid">
         <div className="section-heading">
           <Eyebrow dark={dark}>{eyebrow}</Eyebrow>
-          <div className="heading-copy">
-            <h2>{title}</h2>
-            {body ? <p>{body}</p> : null}
-          </div>
+          <Heading>{title}</Heading>
+          {body ? <p>{body}</p> : null}
         </div>
         {children}
       </div>

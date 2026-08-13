@@ -16,8 +16,8 @@ export function Adjustments() {
               ["0.5×", "bar-half"],
               ["0.25×", "bar-quarter"],
               ["0.25×", "bar-quarter"],
-            ].map(([label, size]) => (
-              <div key={label} className="decay-column">
+            ].map(([label, size], index) => (
+              <div key={`${label}-${index}`} className="decay-column">
                 <span className={size} />
                 <small>{label}</small>
               </div>

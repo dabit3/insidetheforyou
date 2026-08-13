@@ -16,9 +16,9 @@ export function Footer() {
         </div>
         <div>
           <div className="footer-label">Credits</div>
-          <a href="#">Built with Devin ↗</a>
+          <a href="https://devin.ai">Built with Devin ↗</a>
         </div>
-        <p className="fine-print footer-bottom">For learning, not prediction.</p>
+        <p className="fine-print footer-bottom">© 2025 · For learning, not prediction.</p>
       </div>
     </footer>
   );
