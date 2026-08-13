@@ -47,7 +47,7 @@ function Nav() {
             borderRight: '1px solid var(--line-light)',
           }}
         >
-          ✦ The Algorithm
+          The Algorithm
         </a>
         <div style={{ flex: 1 }} />
         {NAV.map(([label, href]) => (
@@ -82,7 +82,7 @@ function Hero() {
         style={{ minHeight: '82vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
       >
         <Reveal>
-          <span className="eyebrow">✦ An interactive field guide to the For You feed</span>
+          <span className="eyebrow">An interactive field guide to the For You feed</span>
         </Reveal>
         <Reveal delay={0.1}>
           <h1 className="display" style={{ maxWidth: 900, fontSize: 'clamp(42px, 6.5vw, 84px)' }}>
@@ -216,7 +216,7 @@ function Sources() {
       </div>
       <Reveal delay={0.2}>
         <p className="small" style={{ marginTop: 24 }}>
-          ✦ This is why your feed isn't only your follows: discovery is built in, not a bug.
+          This is why your feed isn't only your follows: discovery is built in, not a bug.
         </p>
       </Reveal>
     </Section>
@@ -271,7 +271,7 @@ function Signals() {
         ))}
         <Reveal delay={0.4}>
           <p className="small" style={{ marginTop: 24 }}>
-            ✦ Takeaway: every tap teaches it. Your feed is a mirror of your recent behavior, not a
+            Takeaway: every tap teaches it. Your feed is a mirror of your recent behavior, not a
             fixed profile of who you are.
           </p>
         </Reveal>
@@ -321,7 +321,7 @@ function Predictions() {
       </div>
       <Reveal delay={0.3}>
         <p className="small" style={{ marginTop: 24 }}>
-          ✦ These are illustrative numbers for one imaginary post. The model produces a full set
+          These are illustrative numbers for one imaginary post. The model produces a full set
           like this for every candidate, on every refresh.
         </p>
       </Reveal>
@@ -377,7 +377,7 @@ function Visibility() {
       </div>
       <Reveal delay={0.25}>
         <p className="small" style={{ marginTop: 24 }}>
-          ✦ Recommendations from accounts you don't follow face extra, stricter rules — the same
+          Recommendations from accounts you don't follow face extra, stricter rules — the same
           post can be shown to a follower but not recommended to a stranger.
         </p>
       </Reveal>
@@ -453,7 +453,7 @@ function Footer() {
           }}
         >
           <span className="mono" style={{ fontSize: 12, letterSpacing: '0.14em' }}>
-            ✦ THE ALGORITHM, EXPLAINED
+            THE ALGORITHM, EXPLAINED
           </span>
           <div style={{ display: 'flex', gap: 24 }} className="small mono">
             <a href="https://github.com/dabit3/x-algorithm" target="_blank" rel="noreferrer">

@@ -65,7 +65,7 @@ export function Filters() {
       </div>
       <Reveal delay={0.4}>
         <p className="small" style={{ marginTop: 24 }}>
-          ✦ This is why blocking, muting, and muting keywords are the sharpest tools you have —
+          This is why blocking, muting, and muting keywords are the sharpest tools you have —
           they don't lower a score, they remove posts entirely.
         </p>
       </Reveal>

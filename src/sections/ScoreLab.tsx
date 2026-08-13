@@ -124,7 +124,7 @@ export function ScoreLab() {
           />
         </div>
         <p className="small" style={{ marginTop: 20 }}>
-          ✦ Notice the asymmetry: a single report (−234) cancels out 468 likes (+0.5 each). The
+          Notice the asymmetry: a single report (−234) cancels out 468 likes (+0.5 each). The
           algorithm fears annoying you far more than it wants to please you.
         </p>
       </div>

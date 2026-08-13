@@ -38,7 +38,7 @@ export function Section({
       <div className="section-inner">
         {eyebrow && (
           <Reveal>
-            <span className="eyebrow">✦ {eyebrow}</span>
+            <span className="eyebrow">{eyebrow}</span>
           </Reveal>
         )}
         {children}
