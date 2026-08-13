@@ -72,6 +72,15 @@ function Nav() {
             {label}
           </a>
         ))}
+        <a
+          href="https://devin.ai"
+          target="_blank"
+          rel="noreferrer"
+          className="nav-devin"
+          title="Built with Devin"
+        >
+          <img src="/devin.png" alt="Devin" width={18} height={18} />
+        </a>
       </div>
     </div>
   )

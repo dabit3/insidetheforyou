@@ -72,6 +72,28 @@ body {
   }
 }
 
+.nav-devin {
+  display: flex;
+  align-items: center;
+  padding: 14px 18px;
+  border-left: 1px solid var(--line-light);
+  transition: background 0.2s;
+}
+
+.nav-devin img {
+  display: block;
+  transition: filter 0.2s, transform 0.2s;
+}
+
+.nav-devin:hover {
+  background: var(--ink);
+}
+
+.nav-devin:hover img {
+  filter: invert(1);
+  transform: rotate(90deg);
+}
+
 .eyebrow {
   font-family: var(--mono);
   font-size: 11px;
