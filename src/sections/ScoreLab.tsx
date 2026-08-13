@@ -111,11 +111,11 @@ export function ScoreLab() {
           <motion.div
             animate={{
               width: `${Math.min(Math.abs(score) / MAX_ABS, 1) * 100}%`,
-              background: score >= 0 ? '#0d0d0d' : 'transparent',
             }}
             transition={{ type: 'spring', stiffness: 120, damping: 20 }}
             style={{
               height: '100%',
+              backgroundColor: score >= 0 ? '#0d0d0d' : 'transparent',
               backgroundImage:
                 score < 0
                   ? 'repeating-linear-gradient(45deg, #0d0d0d 0 6px, transparent 6px 12px)'

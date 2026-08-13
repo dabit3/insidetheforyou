@@ -29,6 +29,7 @@ function Nav() {
           margin: '0 auto',
           display: 'flex',
           alignItems: 'stretch',
+          flexWrap: 'wrap',
           borderLeft: '1px solid var(--line-light)',
           borderRight: '1px solid var(--line-light)',
         }}
