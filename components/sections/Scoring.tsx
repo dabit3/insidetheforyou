@@ -8,6 +8,13 @@ import { Slider } from "../ui/Slider";
 
 const groups = ["Engagement", "Clicks & attention", "Author", "Negative"];
 
+const presets: Record<string, string> = {
+  like: "like / favorite",
+  reply: "reply",
+  dm: "share via DM",
+  report: "report",
+};
+
 export function Scoring() {
   const [values, setValues] = useState(scoreActions.map((action) => action.value));
   const [mutual, setMutual] = useState(false);
@@ -16,19 +23,13 @@ export function Scoring() {
       scoreActions.reduce((total, action, index) => {
         if (action.name === "reply")
           return total + (mutual ? 20 : action.weight) * (values[index] / 100);
-        if (action.name === "mutual follow extra reply") return total;
         return total + action.weight * (values[index] / 100);
       }, 0),
     [mutual, values],
   );
   const setPreset = (preset: string) => {
-    const next = scoreActions.map((action) =>
-      preset === "report" && action.name === "report" ? 100 : 0,
-    );
-    if (preset === "like") next[0] = 100;
-    if (preset === "reply") next[1] = 100;
-    if (preset === "dm") next[5] = 100;
-    setValues(next);
+    const target = presets[preset];
+    setValues(scoreActions.map((action) => (action.name === target ? 100 : 0)));
   };
 
   return (
@@ -47,7 +48,6 @@ export function Scoring() {
               <div className="group-label">{group}</div>
               {scoreActions
                 .filter((action) => action.group === group)
-                .filter((action) => action.name !== "mutual follow extra reply")
                 .map((action) => {
                   const index = scoreActions.indexOf(action);
                   const weight = action.name === "reply" && mutual ? 20 : action.weight;

@@ -14,7 +14,6 @@ export const scoreActions: ScoreAction[] = [
   { name: "share", weight: 2, group: "Engagement", value: 12 },
   { name: "share via DM", weight: 5, group: "Engagement", value: 25 },
   { name: "share via copy link", weight: 20, group: "Engagement", value: 8 },
-  { name: "mutual follow extra reply", weight: 15, group: "Extra", value: 0 },
   { name: "post click", weight: 0.4, group: "Clicks & attention", value: 45 },
   { name: "open link", weight: 0.2, group: "Clicks & attention", value: 25 },
   { name: "profile click", weight: 0, group: "Clicks & attention", value: 40, muted: true },
