@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export function Reveal({
   children,
@@ -12,11 +13,19 @@ export function Reveal({
   delay?: number;
 }) {
   const reduced = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const animate = mounted && !reduced;
+
   return (
     <motion.div
       className={className}
-      initial={reduced ? false : { opacity: 0, y: 12 }}
-      whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
+      initial={animate ? { opacity: 0, y: 12 } : false}
+      whileInView={animate ? { opacity: 1, y: 0 } : undefined}
       viewport={{ once: true, amount: 0.14 }}
       transition={{ duration: 0.5, delay, ease: "easeOut" }}
     >

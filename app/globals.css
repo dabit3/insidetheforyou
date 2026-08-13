@@ -307,6 +307,14 @@ h2 {
   position: relative;
 }
 
+.filters-section {
+  position: relative;
+}
+
+.scoring-section {
+  overflow-anchor: none;
+}
+
 .pipeline-visual {
   position: sticky;
   top: 24px;
@@ -994,6 +1002,14 @@ h2 {
 
 .footer-grid > div:last-of-type {
   border-right: 0;
+}
+
+.footer-wordmark {
+  margin-bottom: 22px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .footer-label {

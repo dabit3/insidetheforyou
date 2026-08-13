@@ -1,6 +1,12 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { useRef, useState } from "react";
 import { filterReasons } from "@/lib/data";
 import { SectionShell } from "../ui/SectionShell";
@@ -9,11 +15,20 @@ export function Filters() {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
   const [manualStep, setManualStep] = useState(0);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const scrollStep = useTransform(scrollYProgress, [0.1, 0.85], [0, filterReasons.length]);
+  const { scrollY } = useScroll();
+  const sectionProgress = useTransform(scrollY, (value) => {
+    const section = ref.current;
+    if (!section) return 0;
+    const start = section.getBoundingClientRect().top + window.scrollY;
+    const end = start + section.offsetHeight;
+    return Math.max(0, Math.min(1, (value - start) / (end - start)));
+  });
+  const scrollStep = useTransform(sectionProgress, [0.1, 0.85], [0, filterReasons.length]);
   const [progressStep, setProgressStep] = useState(0);
-  scrollStep.on("change", (value) => {
-    if (!reduced) setProgressStep(Math.max(0, Math.min(filterReasons.length, Math.floor(value))));
+  useMotionValueEvent(scrollStep, "change", (value) => {
+    if (reduced !== true) {
+      setProgressStep(Math.max(0, Math.min(filterReasons.length, Math.floor(value))));
+    }
   });
   const removed = Math.max(manualStep, progressStep);
   const current = Math.min(Math.max(removed, 0), filterReasons.length - 1);

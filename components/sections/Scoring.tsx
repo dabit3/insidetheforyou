@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { scoreActions } from "@/lib/data";
 import { AnimatedNumber } from "../ui/AnimatedNumber";
 import { SectionShell } from "../ui/SectionShell";
@@ -18,6 +18,17 @@ const presets: Record<string, string> = {
 export function Scoring() {
   const [values, setValues] = useState(scoreActions.map((action) => action.value));
   const [mutual, setMutual] = useState(false);
+  const scrollPosition = useRef<number | null>(null);
+  const preserveScroll = (update: () => void) => {
+    scrollPosition.current = window.scrollY;
+    update();
+  };
+  useLayoutEffect(() => {
+    if (scrollPosition.current !== null) {
+      window.scrollTo({ top: scrollPosition.current, behavior: "instant" });
+      scrollPosition.current = null;
+    }
+  }, [mutual, values]);
   const score = useMemo(
     () =>
       scoreActions.reduce((total, action, index) => {
@@ -29,12 +40,15 @@ export function Scoring() {
   );
   const setPreset = (preset: string) => {
     const target = presets[preset];
-    setValues(scoreActions.map((action) => (action.name === target ? 100 : 0)));
+    preserveScroll(() =>
+      setValues(scoreActions.map((action) => (action.name === target ? 100 : 0))),
+    );
   };
 
   return (
     <SectionShell
       id="scoring"
+      className="scoring-section"
       dark
       eyebrow="STEP 3 — SCORING"
       title="One post, about thirty predictions, one number"
@@ -72,9 +86,11 @@ export function Scoring() {
                           muted={action.muted}
                           value={values[index]}
                           onChange={(value) =>
-                            setValues((current) =>
-                              current.map((item, itemIndex) =>
-                                itemIndex === index ? value : item,
+                            preserveScroll(() =>
+                              setValues((current) =>
+                                current.map((item, itemIndex) =>
+                                  itemIndex === index ? value : item,
+                                ),
                               ),
                             )
                           }
@@ -96,7 +112,7 @@ export function Scoring() {
             <input
               type="checkbox"
               checked={mutual}
-              onChange={(event) => setMutual(event.target.checked)}
+              onChange={(event) => preserveScroll(() => setMutual(event.target.checked))}
             />
             <span className="toggle-track" aria-hidden="true" />
             <span>You and the author follow each other</span>

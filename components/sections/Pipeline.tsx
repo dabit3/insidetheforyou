@@ -1,6 +1,12 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { useRef, useState } from "react";
 import { pipelineSteps } from "@/lib/data";
 import { SectionShell } from "../ui/SectionShell";
@@ -9,11 +15,20 @@ export function Pipeline() {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
   const [hoverStep, setHoverStep] = useState<number | null>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const scrub = useTransform(scrollYProgress, [0, 1], [0, pipelineSteps.length - 1]);
+  const { scrollY } = useScroll();
+  const sectionProgress = useTransform(scrollY, (value) => {
+    const section = ref.current;
+    if (!section) return 0;
+    const start = section.getBoundingClientRect().top + window.scrollY;
+    const end = start + section.offsetHeight;
+    return Math.max(0, Math.min(1, (value - start) / (end - start)));
+  });
+  const scrub = useTransform(sectionProgress, [0, 1], [0, pipelineSteps.length - 1]);
   const [scrubStep, setScrubStep] = useState(0);
-  scrub.on("change", (value) => {
-    if (!reduced) setScrubStep(Math.min(pipelineSteps.length - 1, Math.max(0, Math.round(value))));
+  useMotionValueEvent(scrub, "change", (value) => {
+    if (reduced !== true) {
+      setScrubStep(Math.min(pipelineSteps.length - 1, Math.max(0, Math.round(value))));
+    }
   });
   const active = hoverStep ?? scrubStep;
 

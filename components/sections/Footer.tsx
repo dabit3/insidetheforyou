@@ -3,6 +3,7 @@ export function Footer() {
     <footer className="footer section-dark">
       <div className="page-grid footer-grid">
         <div>
+          <div className="footer-wordmark">insidetheforyou</div>
           <div className="eyebrow eyebrow-dark">A PLAIN-ENGLISH EXPLAINER</div>
           <p className="fine-print">
             Independent explainer built from X’s published code. Values shown are defaults and can
