@@ -46,25 +46,62 @@ function AdjustmentCard({
     useTransform(progress, [0.2, 0.7], ["50%", `${index === 1 ? 75 : 18}%`]),
     useTransform(progress, [0.2, 0.7], ["25%", `${index === 2 ? 95 : 8}%`]),
   ];
+  const multiplierWidth = useTransform(progress, [0.2, 0.7], ["100%", "75%"]);
+  const coldStartY = useTransform(progress, [0.2, 0.7], ["58px", "8px"]);
+
+  const diagram =
+    index === 0 ? (
+      <div className="decay-diagram" aria-label="Score decays from one to one quarter">
+        {reduced
+          ? ["100%", "50%", "25%"].map((height, bar) => (
+              <div
+                key={bar}
+                className="adjustment-bar"
+                style={{ height }}
+              />
+            ))
+          : heights.map((height, bar) => (
+              <motion.div
+                key={bar}
+                className="adjustment-bar"
+                style={{ height }}
+              />
+            ))}
+      </div>
+    ) : index === 1 ? (
+      <div className="multiplier-diagram" aria-label="Score shrinks to seventy-five percent">
+        <span className="diagram-caption">1.00</span>
+        <div className="multiplier-track">
+          {reduced ? (
+            <div className="multiplier-fill" style={{ width: "75%" }} />
+          ) : (
+            <motion.div className="multiplier-fill" style={{ width: multiplierWidth }} />
+          )}
+        </div>
+        <span className="diagram-caption">0.75</span>
+      </div>
+    ) : (
+      <div className="cold-start-diagram" aria-label="A low-ranked post moves up the ranked list">
+        <div className="ranked-list">
+          <span>01</span>
+          <span>08</span>
+          {reduced ? (
+            <div className="ranked-post" style={{ transform: "translateY(8px)" }}>
+              small author
+            </div>
+          ) : (
+            <motion.div className="ranked-post" style={{ y: coldStartY }}>
+              small author
+            </motion.div>
+          )}
+          <span>16</span>
+        </div>
+      </div>
+    );
+
   return (
     <div className="adjustment-card">
-      <div className="adjustment-bars">
-        {heights.map((height, bar) =>
-          reduced ? (
-            <div
-              key={bar}
-              className="adjustment-bar"
-              style={{ height: `${[90, 50, 25][bar]}%` }}
-            />
-          ) : (
-            <motion.div
-              key={bar}
-              className="adjustment-bar"
-              style={{ height }}
-            />
-          ),
-        )}
-      </div>
+      {diagram}
       <p className="mono text-lavender">{label}</p>
       <h3 className="serif">{title}</h3>
       <p className="dark-copy">{copy}</p>

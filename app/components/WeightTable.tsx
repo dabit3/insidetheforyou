@@ -1,10 +1,11 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { likeComparison, weightKind, weights } from "../../lib/weights";
 
 export function WeightTable() {
+  const reduced = useReducedMotion();
   const [selected, setSelected] = useState(0);
   const [hurt, setHurt] = useState(false);
   const [hovered, setHovered] = useState<number | null>(null);
@@ -12,6 +13,9 @@ export function WeightTable() {
     hurt ? weight.value <= 0 : weight.value > 0,
   );
   const preview = hovered === null ? weights[selected] : weights[hovered];
+  const maxMagnitude = Math.max(
+    ...visible.map((weight) => Math.abs(weight.value)),
+  );
 
   return (
     <div className="weight-layout">
@@ -65,7 +69,7 @@ export function WeightTable() {
         </div>
         {visible.map((weight) => {
           const index = weights.indexOf(weight);
-          const magnitude = Math.min((Math.abs(weight.value) / 234) * 100, 100);
+          const magnitude = (Math.abs(weight.value) / maxMagnitude) * 100;
           return (
             <motion.div
               layout
@@ -81,13 +85,11 @@ export function WeightTable() {
                 {weight.action}
               </button>
               <div className="weight-bar-track">
-                <motion.div
-                  className={`weight-bar ${weight.value < 0 ? "negative-bar" : ""}`}
-                  initial={{ width: 0 }}
-                  whileInView={{ width: `${magnitude}%` }}
-                  viewport={{ once: false, amount: 0.2 }}
-                  animate={{ width: `${magnitude}%` }}
-                  transition={{ duration: 0.55, ease: "easeOut" }}
+                <WeightBar
+                  key={`${weight.action}-${hurt}`}
+                  magnitude={magnitude}
+                  negative={weight.value < 0}
+                  reduced={reduced}
                 />
               </div>
               <span className="mono">{weight.value}</span>
@@ -96,5 +98,29 @@ export function WeightTable() {
         })}
       </div>
     </div>
+  );
+}
+
+function WeightBar({
+  magnitude,
+  negative,
+  reduced,
+}: {
+  magnitude: number;
+  negative: boolean;
+  reduced: boolean | null;
+}) {
+  const className = `weight-bar ${negative ? "negative-bar" : ""}`;
+  if (reduced) {
+    return <div className={className} style={{ width: `${magnitude}%` }} />;
+  }
+  return (
+    <motion.div
+      className={className}
+      initial={{ width: 0 }}
+      whileInView={{ width: `${magnitude}%` }}
+      viewport={{ once: false, amount: 0.2 }}
+      transition={{ duration: 0.55, ease: "easeOut" }}
+    />
   );
 }

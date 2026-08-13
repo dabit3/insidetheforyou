@@ -32,8 +32,13 @@ function FilterCard({
 }) {
   const reduced = useReducedMotion();
   const start = index * 0.12;
-  const opacity = useTransform(progress, [start, start + 0.16], [1, 0.12]);
-  const x = useTransform(progress, [start, start + 0.16], [0, 90 + index * 12]);
+  const opacity = useTransform(progress, [start, start + 0.16], [1, 0.48]);
+  const x = useTransform(progress, [start, start + 0.16], [0, 26]);
+  const removedOpacity = useTransform(
+    progress,
+    [start, start + 0.16],
+    [0, 1],
+  );
   return (
     <motion.div
       className="filter-card"
@@ -45,6 +50,13 @@ function FilterCard({
       </div>
       <p className="mono">{label}</p>
       <p className="filter-title">{title}</p>
+      {reduced ? (
+        <span className="filter-removed">removed</span>
+      ) : (
+        <motion.span className="filter-removed" style={{ opacity: removedOpacity }}>
+          removed
+        </motion.span>
+      )}
     </motion.div>
   );
 }

@@ -1,14 +1,22 @@
 import { ArrowDown } from "lucide-react";
 import { Act, Eyebrow, Reveal } from "./Primitives";
 
+const codeLines = [
+  "score = sum(weight * probability) candidate.author = follow_graph",
+  "visibility = ALLOW | DROP fresh_request() engagement_history[] ranking",
+  "!= visibility feed_blender()",
+];
+
 export function Hero() {
   return (
     <Act id="top" dark>
       <div className="hero">
         <div className="code-texture">
-          score = sum(weight * probability) candidate.author = follow_graph
-          visibility = ALLOW | DROP fresh_request() engagement_history[] ranking
-          != visibility feed_blender()
+          {codeLines.map((line) => (
+            <span className="code-line" key={line}>
+              {line}
+            </span>
+          ))}
         </div>
         <div className="hero-copy">
           <Reveal>

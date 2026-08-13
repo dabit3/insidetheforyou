@@ -170,6 +170,10 @@ button {
   transform: rotate(-5deg) scale(1.2);
 }
 
+.code-line {
+  display: block;
+}
+
 .scroll-cue {
   position: absolute;
   right: 0;
@@ -339,15 +343,20 @@ button {
 .filter-stage {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
+  gap: 12px;
   overflow: hidden;
   margin-top: 48px;
-  background: var(--line);
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
 }
 
 .filter-card {
+  position: relative;
   min-height: 180px;
   padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
   background: var(--card);
 }
 
@@ -366,6 +375,16 @@ button {
 .filter-title {
   margin-top: 8px;
   font-size: 18px;
+}
+
+.filter-removed {
+  display: block;
+  margin-top: 28px;
+  color: var(--negative);
+  font-family: var(--mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .prediction-heading {
@@ -510,6 +529,74 @@ button {
   gap: 8px;
   height: 96px;
   margin-bottom: 28px;
+}
+
+.decay-diagram,
+.multiplier-diagram,
+.cold-start-diagram {
+  height: 96px;
+  margin-bottom: 28px;
+}
+
+.decay-diagram {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+}
+
+.multiplier-diagram {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.multiplier-track {
+  overflow: hidden;
+  height: 14px;
+  border-radius: 2px;
+  background: rgb(255 255 255 / 12%);
+}
+
+.multiplier-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--lavender);
+}
+
+.diagram-caption {
+  color: var(--dark-muted);
+  font-family: var(--mono), monospace;
+  font-size: 11px;
+}
+
+.cold-start-diagram {
+  position: relative;
+}
+
+.ranked-list {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  height: 100%;
+  padding-left: 8px;
+  border-left: 1px solid var(--line);
+  color: var(--dark-muted);
+  font-family: var(--mono), monospace;
+  font-size: 11px;
+}
+
+.ranked-post {
+  position: absolute;
+  top: 0;
+  left: 32px;
+  padding: 7px 10px;
+  border: 1px solid var(--lavender);
+  border-radius: 3px;
+  color: var(--lavender);
+  background: var(--surface);
+  font-family: var(--sans), sans-serif;
+  font-size: 12px;
 }
 
 .adjustment-bar {
@@ -677,5 +764,15 @@ button {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .filter-removed {
+    opacity: 1 !important;
+  }
+
+  [style*="opacity:0"],
+  [style*="opacity: 0"] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
