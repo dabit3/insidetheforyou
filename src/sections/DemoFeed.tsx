@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Reveal, Section } from '../components/Reveal'
 import realTweets from '../data/tweets.json'
@@ -193,88 +193,35 @@ export function DemoFeed() {
   )
 }
 
-type ActionFx = {
-  id: string
-  label: string
-  weight: string
-  kind: 'good' | 'bad'
-  effect: string
+type SimActionId = 'like' | 'reply' | 'copyLink' | 'notInterested' | 'mute' | 'report'
+
+const SIM_ACTIONS: { id: SimActionId; label: string; weight: number; kind: 'good' | 'bad' }[] = [
+  { id: 'like', label: 'Like', weight: 0.5, kind: 'good' },
+  { id: 'reply', label: 'Reply', weight: 5, kind: 'good' },
+  { id: 'copyLink', label: 'Copy link', weight: 20, kind: 'good' },
+  { id: 'notInterested', label: 'Not interested', weight: -43.2, kind: 'bad' },
+  { id: 'mute', label: 'Mute', weight: -58.8, kind: 'bad' },
+  { id: 'report', label: 'Report', weight: -234, kind: 'bad' },
+]
+
+const TOPIC_RULES: [string, RegExp][] = [
+  ['rust', /\brust\b|rustlang|cargo|borrow checker/i],
+  ['ai', /\bai\b|vibe.?cod|agent|llm|prompt|grok|claude|chatgpt|copilot|inference|coding is solved/i],
+  ['careers', /hiring|interview|junior|senior|resume|leetcode|faang|career|salary|recruiter|job/i],
+  ['systems', /c\+\+|kernel|compiler|llvm|mojo|segfault|tcp|assembly|\bzig\b|\bgit\b|low.?level/i],
+  ['infra', /kubernetes|k8s|vps|docker|devops|server|database|sql|redis|postgres|grpc|scalab|cloudflare/i],
+  ['webdev', /react|javascript|typescript|css|frontend|next\.?js|tailwind|node\b|fullstack|full.?stack/i],
+]
+
+function topicOf(text: string): string {
+  for (const [topic, re] of TOPIC_RULES) if (re.test(text)) return topic
+  return 'hot takes'
 }
 
-const ACTION_FX: ActionFx[] = [
-  {
-    id: 'like',
-    label: 'Like',
-    weight: '+0.5',
-    kind: 'good',
-    effect:
-      'This is a whisper. You get slightly more hot takes and slightly more from this author. It takes 468 likes to equal the force of one report.',
-  },
-  {
-    id: 'reply',
-    label: 'Reply',
-    weight: '+5.0',
-    kind: 'good',
-    effect:
-      'This is a loud signal. The algorithm reads conversation as strong interest, so you get more posts that pull you into arguments. A reply to a mutual follow is worth +20.',
-  },
-  {
-    id: 'repost',
-    label: 'Repost',
-    weight: '+1.0',
-    kind: 'good',
-    effect:
-      'This is a moderate signal. You get more from this author, and the post also goes to the feeds of your followers.',
-  },
-  {
-    id: 'copylink',
-    label: 'Copy link',
-    weight: '+20.0',
-    kind: 'good',
-    effect:
-      'This is one of the loudest positive signals. If you copy links from two posts like this, the topic will follow you for days.',
-  },
-  {
-    id: 'follow',
-    label: 'Follow',
-    weight: '+4.0',
-    kind: 'good',
-    effect:
-      'Their posts move into your in-network pool. The 0.75 stranger discount goes away, and Thunder serves their posts directly. If they follow you back, mutual bonuses apply.',
-  },
-  {
-    id: 'notint',
-    label: 'Not interested',
-    weight: '\u221243.2',
-    kind: 'bad',
-    effect:
-      'One tap is worth approximately negative 86 likes. This type of post fades from your feed fast. It is the most efficient steering tool that you have.',
-  },
-  {
-    id: 'mute',
-    label: 'Mute',
-    weight: '\u221258.8',
-    kind: 'bad',
-    effect:
-      'The author vanishes silently. The model also learns what "annoying" means to you, so similar accounts get quieter.',
-  },
-  {
-    id: 'block',
-    label: 'Block',
-    weight: '\u221231.2',
-    kind: 'bad',
-    effect:
-      'This is a hard removal. The visibility gate removes their posts completely, and similar content gets a heavy negative signal.',
-  },
-  {
-    id: 'report',
-    label: 'Report',
-    weight: '\u2212234.0',
-    kind: 'bad',
-    effect:
-      'This is the strongest signal that you can send. One report outweighs 468 likes and teaches the model to bury this whole category of post.',
-  },
-]
+function truncate(s: string, n: number): string {
+  const flat = s.replace(/\s+/g, ' ').trim()
+  return flat.length > n ? `${flat.slice(0, n - 1).trimEnd()}…` : flat
+}
 
 type RealTweet = {
   name: string
@@ -306,12 +253,6 @@ const REAL_TWEETS: RealTweet[] =
 
 const AVATAR_COLORS = ['#6b5b95', '#2a9d8f', '#1d6fa3', '#b5651d', '#7d5ba6', '#3a7d44', '#a34a6f']
 
-function fmt(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, '')}K`
-  return String(n)
-}
-
 function initialsOf(name: string): string {
   return name
     .split(/\s+/)
@@ -328,11 +269,22 @@ function colorOf(handle: string): string {
   return AVATAR_COLORS[h % AVATAR_COLORS.length]
 }
 
-function Avatar({ name, handle, src }: { name: string; handle: string; src?: string }) {
+function Avatar({
+  name,
+  handle,
+  src,
+  size = 40,
+}: {
+  name: string
+  handle: string
+  src?: string
+  size?: number
+}) {
   const [failed, setFailed] = useState(false)
+  const dim = { width: size, height: size, fontSize: size * 0.36 }
   if (!src || failed) {
     return (
-      <div className="tweet-avatar" style={{ background: colorOf(handle) }}>
+      <div className="tweet-avatar" style={{ background: colorOf(handle), ...dim }}>
         {initialsOf(name)}
       </div>
     )
@@ -342,36 +294,131 @@ function Avatar({ name, handle, src }: { name: string; handle: string; src?: str
       className="tweet-avatar"
       src={src}
       alt={name}
-      width={40}
-      height={40}
+      style={dim}
+      width={size}
+      height={size}
       onError={() => setFailed(true)}
     />
   )
 }
 
-export function ActionEffects() {
-  const [active, setActive] = useState<ActionFx | null>(null)
-  const [tweetIndex, setTweetIndex] = useState(() => Math.floor(Math.random() * REAL_TWEETS.length))
+type SimPost = RealTweet & { topic: string }
 
-  // Preload all avatars once so cycling between posts is instant.
+const CLASSIFIED: SimPost[] = REAL_TWEETS.map((t) => ({ ...t, topic: topicOf(t.text) }))
+
+// Today: up to 4 posts with distinct topics and distinct authors.
+const TODAY: SimPost[] = (() => {
+  const picked: SimPost[] = []
+  const topics = new Set<string>()
+  const authors = new Set<string>()
+  for (const t of CLASSIFIED) {
+    if (picked.length >= 4) break
+    if (topics.has(t.topic) || authors.has(t.handle)) continue
+    topics.add(t.topic)
+    authors.add(t.handle)
+    picked.push(t)
+  }
+  return picked
+})()
+
+// Tomorrow's candidate pool: everything else, at most 3 posts per topic.
+const POOL: SimPost[] = (() => {
+  const todayKeys = new Set(TODAY.map((t) => t.url || t.text))
+  const perTopic: Record<string, number> = {}
+  const pool: SimPost[] = []
+  for (const t of CLASSIFIED) {
+    if (todayKeys.has(t.url || t.text)) continue
+    perTopic[t.topic] = (perTopic[t.topic] ?? 0) + 1
+    if (perTopic[t.topic] > 3) continue
+    pool.push(t)
+  }
+  return pool
+})()
+
+function keyOf(p: SimPost): string {
+  return p.url || `${p.handle}-${p.text.slice(0, 24)}`
+}
+
+export function ActionEffects() {
+  const [acts, setActs] = useState<Record<string, SimActionId[]>>({})
+
+  // Preload all avatars once so re-ranking is instant.
   useEffect(() => {
-    for (const t of REAL_TWEETS) {
+    for (const t of CLASSIFIED) {
       if (!t.avatar) continue
       const img = new Image()
       img.src = t.avatar
     }
   }, [])
 
-  const shuffleTweet = () => {
-    if (REAL_TWEETS.length < 2) return
-    setTweetIndex((prev) => {
-      let next = prev
-      while (next === prev) next = Math.floor(Math.random() * REAL_TWEETS.length)
-      return next
+  const toggle = (postKey: string, action: SimActionId) => {
+    setActs((prev) => {
+      const current = prev[postKey] ?? []
+      const next = current.includes(action)
+        ? current.filter((a) => a !== action)
+        : [...current, action]
+      return { ...prev, [postKey]: next }
     })
   }
 
-  const tweet = REAL_TWEETS[tweetIndex]
+  const sim = useMemo(() => {
+    const topicSum: Record<string, number> = {}
+    const topicChips: Record<string, { label: string; w: number }[]> = {}
+    const mutedAuthors = new Set<string>()
+    const dimTopics = new Set<string>()
+    const reportedTopics = new Set<string>()
+
+    for (const post of TODAY) {
+      const taken = acts[keyOf(post)] ?? []
+      for (const id of taken) {
+        const def = SIM_ACTIONS.find((a) => a.id === id)!
+        if (id === 'mute') {
+          mutedAuthors.add(post.handle)
+          dimTopics.add(post.topic)
+        } else if (id === 'report') {
+          reportedTopics.add(post.topic)
+        } else {
+          topicSum[post.topic] = (topicSum[post.topic] ?? 0) + def.weight
+          topicChips[post.topic] = [
+            ...(topicChips[post.topic] ?? []),
+            { label: def.label.toLowerCase(), w: def.weight },
+          ]
+        }
+      }
+    }
+
+    const ranked = POOL.filter(
+      (p) => !mutedAuthors.has(p.handle) && !reportedTopics.has(p.topic)
+    )
+      .map((p) => ({
+        ...p,
+        dimmed: dimTopics.has(p.topic),
+        chips: topicChips[p.topic] ?? [],
+        score:
+          Math.log10(p.likes + 1) +
+          (topicSum[p.topic] ?? 0) +
+          (dimTopics.has(p.topic) ? -5 : 0),
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 7)
+
+    const interests = Object.entries(topicSum)
+      .filter(([t, s]) => s !== 0 && !reportedTopics.has(t))
+      .map(([t, s]) =>
+        s >= 20 ? `${t} ↑↑` : s > 0 ? `${t} ↑` : s <= -40 ? `${t} ↓↓` : `${t} ↓`
+      )
+
+    const parts: string[] = []
+    if (interests.length > 0) parts.push(`interests: ${interests.join(', ')}`)
+    if (mutedAuthors.size > 0)
+      parts.push(`muted: ${mutedAuthors.size} author${mutedAuthors.size > 1 ? 's' : ''}`)
+    if (reportedTopics.size > 0)
+      parts.push(`report sent: ${[...reportedTopics].join(', ')} buried`)
+    const summary =
+      parts.join(' · ') || 'nothing yet. act on a post to start training it.'
+
+    return { ranked, summary }
+  }, [acts])
 
   return (
     <Section theme="light">
@@ -382,136 +429,140 @@ export function ActionEffects() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          The real power is not to go viral. The real power is to control what you see. Hover over
-          each action on this post to see its effect on your future feed.
+          These are real posts from X. Act on today's feed and watch tomorrow's feed re-rank
+          itself.
         </p>
       </Reveal>
 
-      <div style={{ marginTop: 48, maxWidth: 720 }}>
-        <div className={`fx-card ${active ? active.kind : ''}`}>
-          <div className="fx-post">
-            <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={tweetIndex}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                <Avatar key={tweet.handle} name={tweet.name} handle={tweet.handle} src={tweet.avatar} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <a
-                    className="tweet-link"
-                    href={tweet.url || undefined}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={(e) => {
-                      if (!tweet.url) e.preventDefault()
-                    }}
-                  >
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', flexWrap: 'wrap' }}>
-                      <span style={{ fontWeight: 600, fontSize: 14 }}>{tweet.name}</span>
-                      <span className="mono" style={{ fontSize: 12, opacity: 0.45 }}>
-                        {tweet.handle}
-                        {tweet.date ? ` · ${tweet.date}` : ''}
-                      </span>
-                      {tweet.url && (
-                        <span className="mono tweet-link-hint" style={{ fontSize: 11, opacity: 0.4 }}>
-                          view on X ↗
-                        </span>
-                      )}
-                    </div>
-                    <p style={{ marginTop: 6, fontSize: 15, lineHeight: 1.5, whiteSpace: 'pre-line' }}>
-                      {tweet.text}
-                    </p>
-                  </a>
-                  <p className="mono" style={{ marginTop: 12, fontSize: 12, opacity: 0.5 }}>
-                    {fmt(tweet.replies)} replies · {fmt(tweet.reposts)} reposts · {fmt(tweet.likes)}{' '}
-                    likes · {fmt(tweet.views)} views
-                  </p>
-                </div>
-                {REAL_TWEETS.length > 1 && (
-                  <button className="fx-btn" onClick={shuffleTweet} title="Show a different post">
-                    ↻
-                  </button>
-                )}
-              </div>
-            </motion.div>
-          </AnimatePresence>
-            <div className="fx-actions" onMouseLeave={() => setActive(null)}>
-              {ACTION_FX.map((a) => (
-                <button
-                  key={a.id}
-                  className={`fx-btn ${a.kind} ${active?.id === a.id ? 'active' : ''}`}
-                  onMouseEnter={() => setActive(a)}
-                  onFocus={() => setActive(a)}
-                  onClick={() => setActive(a)}
-                >
-                  {a.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="fx-panel">
-            <div className="fx-stack">
-              <div className="fx-sizer" aria-hidden="true">
-                {ACTION_FX.map((a) => (
-                  <div key={a.id}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-                      <span className="mono" style={{ fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                        {a.label}
-                      </span>
-                      <span className="mono" style={{ fontSize: 18, fontWeight: 500 }}>
-                        {a.weight}
-                      </span>
-                    </div>
-                    <p className="small" style={{ marginTop: 8 }}>{a.effect}</p>
-                  </div>
-                ))}
-              </div>
-              <div>
-                <AnimatePresence mode="wait">
-                  {active ? (
-                    <motion.div
-                      key={active.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.18 }}
+      <div className="sim-grid" style={{ marginTop: 48 }}>
+        <div>
+          <span className="sim-heading mono">Today: act on these</span>
+          {TODAY.map((post) => {
+            const taken = acts[keyOf(post)] ?? []
+            return (
+              <div className="sim-card" key={keyOf(post)}>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                  <Avatar name={post.name} handle={post.handle} src={post.avatar} size={36} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <a
+                      className="tweet-link"
+                      href={post.url || undefined}
+                      target="_blank"
+                      rel="noreferrer"
                     >
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-                        <span className="mono" style={{ fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                          {active.label}
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', flexWrap: 'wrap' }}>
+                        <span style={{ fontWeight: 600, fontSize: 13 }}>{post.name}</span>
+                        <span className="mono" style={{ fontSize: 11, opacity: 0.45 }}>
+                          {post.handle}
                         </span>
-                        <span
-                          className="mono"
-                          style={{ fontSize: 18, fontWeight: 500, color: active.kind === 'good' ? '#0f7b3e' : '#c22a2a' }}
-                        >
-                          {active.weight}
-                        </span>
+                        <span className="sim-topic mono">{post.topic}</span>
                       </div>
-                      <p className="small" style={{ marginTop: 8, color: 'inherit', opacity: 0.8 }}>
-                        {active.effect}
+                      <p style={{ marginTop: 4, fontSize: 13.5, lineHeight: 1.45 }}>
+                        {truncate(post.text, 140)}
                       </p>
-                    </motion.div>
-                  ) : (
-                    <motion.p
-                      key="idle"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="small mono"
-                      style={{ opacity: 0.4 }}
+                    </a>
+                  </div>
+                </div>
+                <div className="sim-actions">
+                  {SIM_ACTIONS.map((a) => (
+                    <button
+                      key={a.id}
+                      className={`fx-btn ${a.kind} ${taken.includes(a.id) ? 'active' : ''}`}
+                      onClick={() => toggle(keyOf(post), a.id)}
                     >
-                      hover over an action to see its effect
-                    </motion.p>
-                  )}
-                </AnimatePresence>
+                      {a.label}{' '}
+                      <span style={{ opacity: 0.55 }}>
+                        {a.weight > 0 ? `+${a.weight}` : a.weight}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )
+          })}
+        </div>
+
+        <div>
+          <span className="sim-heading mono">Tomorrow: your next refresh</span>
+          <div className="sim-feed">
+            <AnimatePresence initial={false}>
+              {sim.ranked.map((p, i) => (
+                <motion.div
+                  layout
+                  key={keyOf(p)}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: p.dimmed ? 0.45 : 1, scale: 1 }}
+                  exit={{ opacity: 0, x: 56, scale: 0.94 }}
+                  transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+                  className="sim-row"
+                >
+                  <span className="mono" style={{ opacity: 0.35, fontSize: 11, width: 14 }}>
+                    {i + 1}
+                  </span>
+                  <Avatar name={p.name} handle={p.handle} src={p.avatar} size={26} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <a
+                      className="tweet-link"
+                      href={p.url || undefined}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'baseline', flexWrap: 'wrap' }}>
+                        <span style={{ fontWeight: 600, fontSize: 12.5 }}>{p.name}</span>
+                        <span className="sim-topic mono">{p.topic}</span>
+                      </div>
+                      <p style={{ fontSize: 12.5, lineHeight: 1.4, opacity: 0.75, marginTop: 2 }}>
+                        {truncate(p.text, 80)}
+                      </p>
+                    </a>
+                    {(p.chips.length > 0 || p.dimmed) && (
+                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 5 }}>
+                        {p.chips.map((c, ci) => (
+                          <span key={ci} className={`sim-chip ${c.w > 0 ? 'good' : 'bad'}`}>
+                            {c.w > 0 ? '+' : ''}
+                            {c.w} {c.label}
+                          </span>
+                        ))}
+                        {p.dimmed && <span className="sim-chip bad">−5 muted-adjacent</span>}
+                      </div>
+                    )}
+                  </div>
+                  <span
+                    className="mono"
+                    style={{ fontSize: 11.5, opacity: p.score >= 0 ? 0.8 : 0.5, whiteSpace: 'nowrap' }}
+                  >
+                    {p.score >= 0 ? '+' : ''}
+                    {p.score.toFixed(1)}
+                  </span>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            {sim.ranked.length === 0 && (
+              <p className="small mono" style={{ padding: 24, opacity: 0.5 }}>
+                you buried everything. tomorrow's feed is empty.
+              </p>
+            )}
           </div>
         </div>
+      </div>
+
+      <div className="sim-summary">
+        <span className="sim-heading mono" style={{ marginBottom: 0 }}>
+          What the algorithm learned about you
+        </span>
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={sim.summary}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
+            className="mono"
+            style={{ fontSize: 13, marginTop: 8 }}
+          >
+            {sim.summary}
+          </motion.p>
+        </AnimatePresence>
       </div>
 
       <Reveal delay={0.2}>

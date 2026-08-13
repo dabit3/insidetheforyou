@@ -10,11 +10,30 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { Agent, fetch as undiciFetch } from 'undici'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 
+// Agentic X searches can take a long time before the first byte arrives, so
+// raise undici's default 5-minute header timeout to 20 minutes.
+const slowAgent = new Agent({ headersTimeout: 20 * 60_000, bodyTimeout: 20 * 60_000 })
+
 // These accounts appear in every refresh.
-const REQUIRED_HANDLES = ['theo', 'ThePrimeagen', 'maria_rcks', 'jaredpalmer', 'markfenner']
+const REQUIRED_HANDLES = [
+  'theo',
+  'ThePrimeagen',
+  'maria_rcks',
+  'jaredpalmer',
+  'markfenner',
+  'ryancarson',
+  'ScottWu46',
+  'bcherny',
+  'dabit3',
+  'kentcdodds',
+  'jeffwang',
+  'imjaredz',
+  'devinai',
+]
 
 function loadApiKey() {
   if (process.env.XAI_API_KEY) return process.env.XAI_API_KEY
@@ -37,17 +56,9 @@ const JSON_SPEC = `Output ONLY a JSON array, no markdown fences, no commentary. 
 
 Use the real engagement numbers and the real status URLs from the posts. Do not invent URLs.`
 
-const GENERAL_PROMPT = `Use X search to find 30 popular recent X posts about programming and software engineering. Run several different searches to cover a DIVERSE set of topics, for example:
-- AI and coding agents
-- web development, JavaScript, TypeScript, React
-- systems programming, Rust, Go, C, Zig
-- databases, networking, and infrastructure
-- open source and developer tools
-- career advice and interviews in tech
-- debugging and production incident stories
-- programming languages and compilers
-- indie hacking and building products
-- developer humor and hot takes
+function generalPrompt(topics) {
+  return `Use X search to find 25 popular recent X posts about programming and software engineering. Run several different searches to cover a DIVERSE set of topics, for example:
+${topics.map((t) => `- ${t}`).join('\n')}
 
 Requirements for each post:
 - at least 100 likes
@@ -55,11 +66,28 @@ Requirements for each post:
 - a standalone TEXT post, not a reply and not an image or video meme (the text must stand on its own)
 - text between 40 and 280 characters
 - interesting, insightful, or funny to a developer audience
-- each post must come from a DIFFERENT author (30 different accounts), and include a mix of well-known and smaller accounts
+- each post must come from a DIFFERENT author (25 different accounts), and include a mix of well-known and smaller accounts
 - no meme aggregator accounts (for example, no ProgrammerHumor accounts)
 - no offensive content
 
 ${JSON_SPEC}`
+}
+
+const GENERAL_PROMPT_A = generalPrompt([
+  'AI and coding agents',
+  'web development, JavaScript, TypeScript, React',
+  'career advice and interviews in tech',
+  'indie hacking and building products',
+  'developer humor and hot takes',
+])
+
+const GENERAL_PROMPT_B = generalPrompt([
+  'systems programming, Rust, Go, C, Zig',
+  'databases, networking, and infrastructure',
+  'open source and developer tools',
+  'programming languages and compilers',
+  'debugging and production incident stories',
+])
 
 const REQUIRED_PROMPT = `Use X search to find the single most popular RECENT post from each of these X accounts: ${REQUIRED_HANDLES.map((h) => `@${h}`).join(', ')}.
 
@@ -73,8 +101,9 @@ Requirements for each post:
 ${JSON_SPEC}`
 
 async function askGrok(apiKey, prompt, tool) {
-  const res = await fetch('https://api.x.ai/v1/responses', {
+  const res = await undiciFetch('https://api.x.ai/v1/responses', {
     method: 'POST',
+    dispatcher: slowAgent,
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
@@ -182,19 +211,24 @@ async function main() {
   const apiKey = loadApiKey()
   console.log('Asking Grok to search X for pinned accounts and popular programming posts...')
 
-  const [requiredRaw, generalRaw] = await Promise.all([
+  const [requiredRaw, generalRawA, generalRawB] = await Promise.all([
     askGrok(apiKey, REQUIRED_PROMPT, { type: 'x_search', allowed_x_handles: REQUIRED_HANDLES }),
-    askGrok(apiKey, GENERAL_PROMPT, { type: 'x_search' }),
+    askGrok(apiKey, GENERAL_PROMPT_A, { type: 'x_search' }),
+    askGrok(apiKey, GENERAL_PROMPT_B, { type: 'x_search' }),
   ])
 
   // Pinned posts keep any like count; general posts need at least 100 likes.
   const required = normalize(requiredRaw, 1)
-  const requiredHandles = new Set(required.map((p) => p.handle.toLowerCase()))
-  const general = normalize(generalRaw, 100).filter(
-    (p) => !requiredHandles.has(p.handle.toLowerCase())
-  )
+  const seen = new Set(required.map((p) => p.handle.toLowerCase()))
+  const requiredHandles = new Set(seen)
+  const general = normalize([...generalRawA, ...generalRawB], 100).filter((p) => {
+    const h = p.handle.toLowerCase()
+    if (seen.has(h)) return false
+    seen.add(h)
+    return true
+  })
 
-  const posts = await verifyPosts([...required, ...general].slice(0, 40))
+  const posts = await verifyPosts([...required, ...general].slice(0, 55))
   if (posts.length === 0) throw new Error('No valid posts parsed from either request')
 
   const missing = REQUIRED_HANDLES.filter(
@@ -212,6 +246,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(err.message)
+  console.error(err.message, err.cause ?? '')
   process.exit(1)
 })

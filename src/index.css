@@ -21,6 +21,8 @@
 
 html {
   scroll-behavior: smooth;
+  overscroll-behavior: none;
+  background: var(--ink);
 }
 
 body {
@@ -30,6 +32,7 @@ body {
   font-size: 15px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
 }
 
 ::selection {
@@ -886,42 +889,120 @@ body {
   flex-shrink: 0;
 }
 
-/* Action effects card */
-.fx-card {
+/* Today → Tomorrow feed simulator */
+.sim-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+  max-width: 1080px;
+}
+
+@media (max-width: 900px) {
+  .sim-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sim-heading {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 14px;
+}
+
+.sim-card {
   border: 1px solid var(--ink);
-  border-radius: 16px;
+  border-radius: 12px;
   background: var(--white);
-  box-shadow: 6px 6px 0 var(--ink);
-  overflow: hidden;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 16px;
+  margin-bottom: 14px;
 }
 
-.fx-card.good {
-  border-color: #0f7b3e;
-  box-shadow: 6px 6px 0 #0f7b3e;
-}
-
-.fx-card.bad {
-  border-color: #c22a2a;
-  box-shadow: 6px 6px 0 #c22a2a;
-}
-
-.fx-post {
-  background: var(--white);
-  padding: 24px 28px;
-}
-
-.fx-post p {
+.sim-card p {
   overflow-wrap: break-word;
 }
 
-.fx-actions {
+.sim-topic {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--line-light);
+  border-radius: 4px;
+  padding: 1px 6px;
+  opacity: 0.65;
+}
+
+.sim-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  margin-top: 20px;
-  padding-top: 16px;
+  margin-top: 12px;
+  padding-top: 12px;
   border-top: 1px solid var(--line-light);
+}
+
+.sim-actions .fx-btn {
+  padding: 6px 10px;
+  font-size: 11px;
+}
+
+.sim-feed {
+  border: 1px solid var(--ink);
+  border-radius: 12px;
+  background: var(--white);
+  box-shadow: 4px 4px 0 var(--ink);
+  overflow: hidden;
+}
+
+.sim-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line-light);
+  background: var(--white);
+}
+
+.sim-row:last-child {
+  border-bottom: none;
+}
+
+.sim-row p {
+  overflow-wrap: break-word;
+}
+
+.sim-chip {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid;
+}
+
+.sim-chip.good {
+  color: #0f7b3e;
+  border-color: rgba(15, 123, 62, 0.45);
+  background: rgba(15, 123, 62, 0.06);
+}
+
+.sim-chip.bad {
+  color: #c22a2a;
+  border-color: rgba(194, 42, 42, 0.45);
+  background: rgba(194, 42, 42, 0.06);
+}
+
+.sim-summary {
+  margin-top: 32px;
+  max-width: 1080px;
+  border: 1px solid var(--ink);
+  border-radius: 12px;
+  background: var(--white);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 18px 20px;
 }
 
 .fx-btn {
@@ -973,38 +1054,8 @@ body {
   text-decoration: none;
 }
 
-.tweet-link-hint {
-  transition: opacity 0.15s;
-}
-
-.tweet-link:hover .tweet-link-hint {
-  opacity: 0.9 !important;
-}
-
-.fx-panel {
-  border-top: 1px solid var(--line-light);
-  padding: 24px 28px;
-  background: var(--white);
-}
-
-/* Stack the visible content on top of invisible copies of every effect
-   text, so the panel is always as tall as the tallest one (no layout shift). */
-.fx-stack {
-  display: grid;
-}
-
-.fx-stack > * {
-  grid-area: 1 / 1;
-}
-
-.fx-sizer {
-  visibility: hidden;
-  pointer-events: none;
-  display: grid;
-}
-
-.fx-sizer > * {
-  grid-area: 1 / 1;
+.tweet-link:hover {
+  text-decoration: underline;
 }
 
 /* Deep-dive slideshow */
@@ -1180,13 +1231,12 @@ a {
     font-size: 40px;
   }
 
-  .fx-post,
-  .fx-panel {
-    padding: 18px 16px;
-  }
-
   .tweet {
     padding: 12px;
+  }
+
+  .sim-summary {
+    padding: 14px 16px;
   }
 
   .feed-notes {

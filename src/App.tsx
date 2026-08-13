@@ -68,7 +68,7 @@ function Hero() {
             </a>
             <a
               className="boxlink"
-              href="https://github.com/xai-org/x-algorithm"
+              href="https://deepwiki.com/xai-org/x-algorithm"
               target="_blank"
               rel="noreferrer"
             >
