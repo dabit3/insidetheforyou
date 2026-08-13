@@ -17,15 +17,25 @@ function loadApiKey() {
   return match[1].trim()
 }
 
-const PROMPT = `Use X search to find 10 popular recent X posts about programming, software engineering, or developer culture.
+const PROMPT = `Use X search to find 30 popular recent X posts about programming and software engineering. Run several different searches to cover a DIVERSE set of topics, for example:
+- AI and coding agents
+- web development, JavaScript, TypeScript, React
+- systems programming, Rust, Go, C, Zig
+- databases, networking, and infrastructure
+- open source and developer tools
+- career advice and interviews in tech
+- debugging and production incident stories
+- programming languages and compilers
+- indie hacking and building products
+- developer humor and hot takes
 
 Requirements for each post:
 - at least 100 likes
 - written in English
 - a standalone TEXT post, not a reply and not an image or video meme (the text must stand on its own)
 - text between 40 and 280 characters
-- a hot take, insight, or joke that a developer audience finds interesting
-- each post must come from a DIFFERENT author (10 different accounts)
+- interesting, insightful, or funny to a developer audience
+- each post must come from a DIFFERENT author (30 different accounts), and include a mix of well-known and smaller accounts
 - no meme aggregator accounts (for example, no ProgrammerHumor accounts)
 - no offensive content
 
@@ -38,8 +48,9 @@ Output ONLY a JSON array, no markdown fences, no commentary. Each element must h
 - "replies": number
 - "reposts": number
 - "views": number
+- "url": the direct link to the post, like "https://x.com/handle/status/123456789"
 
-Use the real engagement numbers from the posts.`
+Use the real engagement numbers and the real status URLs from the posts. Do not invent URLs.`
 
 async function main() {
   const apiKey = loadApiKey()
@@ -96,8 +107,12 @@ async function main() {
       replies: typeof p.replies === 'number' ? p.replies : 0,
       reposts: typeof p.reposts === 'number' ? p.reposts : 0,
       views: typeof p.views === 'number' ? p.views : 0,
+      url:
+        typeof p.url === 'string' && /^https:\/\/(x|twitter)\.com\/[^/]+\/status\/\d+/.test(p.url)
+          ? p.url
+          : '',
     }))
-    .slice(0, 10)
+    .slice(0, 30)
 
   if (posts.length === 0) throw new Error(`No valid posts parsed from output:\n${raw}`)
 

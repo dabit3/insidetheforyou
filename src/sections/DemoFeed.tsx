@@ -327,6 +327,29 @@ function colorOf(handle: string): string {
   return AVATAR_COLORS[h % AVATAR_COLORS.length]
 }
 
+function Avatar({ name, handle }: { name: string; handle: string }) {
+  const [failed, setFailed] = useState(false)
+  const username = handle.replace(/^@/, '')
+  if (failed) {
+    return (
+      <div className="tweet-avatar" style={{ background: colorOf(handle) }}>
+        {initialsOf(name)}
+      </div>
+    )
+  }
+  return (
+    <img
+      className="tweet-avatar"
+      src={`https://unavatar.io/x/${username}`}
+      alt={name}
+      width={40}
+      height={40}
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  )
+}
+
 export function ActionEffects() {
   const [active, setActive] = useState<ActionFx | null>(null)
   const [tweetIndex, setTweetIndex] = useState(() => Math.floor(Math.random() * REAL_TWEETS.length))
@@ -368,9 +391,7 @@ export function ActionEffects() {
               transition={{ duration: 0.2 }}
             >
               <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                <div className="tweet-avatar" style={{ background: colorOf(tweet.handle) }}>
-                  {initialsOf(tweet.name)}
-                </div>
+                <Avatar key={tweet.handle} name={tweet.name} handle={tweet.handle} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', flexWrap: 'wrap' }}>
                     <span style={{ fontWeight: 600, fontSize: 14 }}>{tweet.name}</span>
@@ -411,42 +432,61 @@ export function ActionEffects() {
           </div>
 
           <div className="fx-panel">
-            <AnimatePresence mode="wait">
-            {active ? (
-              <motion.div
-                key={active.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.18 }}
-              >
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-                  <span className="mono" style={{ fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                    {active.label}
-                  </span>
-                  <span
-                    className="mono"
-                    style={{ fontSize: 18, fontWeight: 500, color: active.kind === 'good' ? '#0f7b3e' : '#c22a2a' }}
-                  >
-                    {active.weight}
-                  </span>
-                </div>
-                <p className="small" style={{ marginTop: 8, color: 'inherit', opacity: 0.8 }}>
-                  {active.effect}
-                </p>
-              </motion.div>
-            ) : (
-              <motion.p
-                key="idle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="small mono"
-                style={{ opacity: 0.4 }}
-              >
-                hover over an action to see its effect
-              </motion.p>
-            )}
-            </AnimatePresence>
+            <div className="fx-stack">
+              <div className="fx-sizer" aria-hidden="true">
+                {ACTION_FX.map((a) => (
+                  <div key={a.id}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+                      <span className="mono" style={{ fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                        {a.label}
+                      </span>
+                      <span className="mono" style={{ fontSize: 18, fontWeight: 500 }}>
+                        {a.weight}
+                      </span>
+                    </div>
+                    <p className="small" style={{ marginTop: 8 }}>{a.effect}</p>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <AnimatePresence mode="wait">
+                  {active ? (
+                    <motion.div
+                      key={active.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.18 }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+                        <span className="mono" style={{ fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                          {active.label}
+                        </span>
+                        <span
+                          className="mono"
+                          style={{ fontSize: 18, fontWeight: 500, color: active.kind === 'good' ? '#0f7b3e' : '#c22a2a' }}
+                        >
+                          {active.weight}
+                        </span>
+                      </div>
+                      <p className="small" style={{ marginTop: 8, color: 'inherit', opacity: 0.8 }}>
+                        {active.effect}
+                      </p>
+                    </motion.div>
+                  ) : (
+                    <motion.p
+                      key="idle"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="small mono"
+                      style={{ opacity: 0.4 }}
+                    >
+                      hover over an action to see its effect
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
           </div>
         </div>
       </div>

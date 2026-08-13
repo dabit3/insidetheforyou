@@ -127,17 +127,10 @@ body {
   font-family: var(--mono);
 }
 
-/* Varda-style bordered cell grid: cells share 1px lines, sharp corners */
+/* Cell grid: rounded, hard-shadowed cards matching the button language */
 .cellgrid {
   display: grid;
-  border: 1px solid var(--line-light);
-  background: var(--line-light);
-  gap: 1px;
-}
-
-.dark .cellgrid {
-  border-color: var(--line-dark);
-  background: var(--line-dark);
+  gap: 18px;
 }
 
 .cellgrid.cols-2 {
@@ -168,13 +161,18 @@ body {
 }
 
 .cell {
-  background: var(--paper);
+  background: var(--white);
   padding: 24px;
   min-height: 120px;
+  border: 1px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 5px 5px 0 var(--ink);
 }
 
 .dark .cell {
   background: var(--ink);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 5px 5px 0 rgba(255, 255, 255, 0.45);
 }
 
 .cell.filled {
@@ -264,12 +262,12 @@ body {
   font-size: 12px;
   letter-spacing: 0.06em;
   padding: 12px 18px;
-  border: 1px solid var(--ink);
+  border: 1px solid #0f7b3e;
   border-radius: 8px;
   background: var(--paper);
-  color: var(--ink);
+  color: #0f7b3e;
   cursor: pointer;
-  box-shadow: 2px 2px 0 var(--ink);
+  box-shadow: 2px 2px 0 #0f7b3e;
   transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s, box-shadow 0.1s;
   display: inline-flex;
   align-items: center;
@@ -278,18 +276,27 @@ body {
 
 .pill-toggle:hover {
   transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 var(--ink);
+  box-shadow: 3px 3px 0 #0f7b3e;
 }
 
 .pill-toggle:active {
   transform: translate(2px, 2px);
-  box-shadow: 0 0 0 var(--ink);
+  box-shadow: 0 0 0 #0f7b3e;
 }
 
 .pill-toggle.on {
-  background: var(--ink);
+  background: #0f7b3e;
   color: var(--white);
-  border-color: var(--ink);
+  border-color: #0f7b3e;
+  box-shadow: 2px 2px 0 #0a4a26;
+}
+
+.pill-toggle.on:hover {
+  box-shadow: 3px 3px 0 #0a4a26;
+}
+
+.pill-toggle.on:active {
+  box-shadow: 0 0 0 #0a4a26;
 }
 
 .pill-toggle.negative {
@@ -626,6 +633,7 @@ body {
   font-weight: 600;
   font-size: 15px;
   font-family: var(--sans);
+  object-fit: cover;
 }
 
 .tweet-head {
@@ -855,8 +863,27 @@ body {
 .fx-panel {
   border-top: 1px solid var(--line-light);
   padding: 24px 28px;
-  min-height: 118px;
   background: var(--white);
+}
+
+/* Stack the visible content on top of invisible copies of every effect
+   text, so the panel is always as tall as the tallest one (no layout shift). */
+.fx-stack {
+  display: grid;
+}
+
+.fx-stack > * {
+  grid-area: 1 / 1;
+}
+
+.fx-sizer {
+  visibility: hidden;
+  pointer-events: none;
+  display: grid;
+}
+
+.fx-sizer > * {
+  grid-area: 1 / 1;
 }
 
 /* Deep-dive slideshow */

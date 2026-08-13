@@ -60,6 +60,7 @@ function Nav() {
             style={{
               padding: '14px 16px',
               fontSize: 11,
+              fontWeight: 600,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               textDecoration: 'none',
@@ -553,12 +554,27 @@ function Footer() {
           <span className="mono" style={{ fontSize: 12, letterSpacing: '0.14em' }}>
             INSIDETHEFORYOU
           </span>
-          <div style={{ display: 'flex', gap: 24 }} className="small mono">
+          <div style={{ display: 'flex', gap: 24, alignItems: 'center' }} className="small mono">
             <a href="https://github.com/xai-org/x-algorithm" target="_blank" rel="noreferrer">
               Source code ↗
             </a>
             <a href="https://deepwiki.com/xai-org/x-algorithm/" target="_blank" rel="noreferrer">
               DeepWiki ↗
+            </a>
+            <a
+              href="https://devin.ai"
+              target="_blank"
+              rel="noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
+            >
+              <img
+                src="/devin.png"
+                alt="Devin"
+                width={16}
+                height={16}
+                style={{ filter: 'invert(1)', display: 'block' }}
+              />
+              Built with Devin ↗
             </a>
           </div>
         </div>

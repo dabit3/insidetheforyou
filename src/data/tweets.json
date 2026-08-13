@@ -4,30 +4,100 @@
     "handle": "@emilkowalski",
     "text": "It’s impressive how fast Grok is improving after Cursor acquisition.\n\nIt shows how important good data is for these models and explains why Gemini is struggling at coding since they have no popular harness to get training data from.",
     "date": "Aug 13",
-    "likes": 1119,
+    "likes": 1137,
     "replies": 44,
     "reposts": 19,
-    "views": 37778
+    "views": 38360
   },
   {
     "name": "Valentin Ignatev",
     "handle": "@valigo",
-    "text": "I'll agree that AI is good at programming when I see influx of instantly fast, beautiful, and resource-efficient native desktop software.\n\nSo far everything like this comes from dominantly human-driven programming with AI being a helpful tool at best.",
+    "text": "I'll agree that AI is good at programming when I see influx of instantly fast, beautiful, and resource-efficient native desktop software.\nSo far everything like this comes from dominantly human-driven programming with AI being a helpful tool at best.",
     "date": "Aug 13",
-    "likes": 225,
-    "replies": 17,
+    "likes": 227,
+    "replies": 18,
     "reposts": 3,
-    "views": 4816
+    "views": 4858
+  },
+  {
+    "name": "Pri",
+    "handle": "@solopribuilds",
+    "text": "X: Everyone is vibe coding.\n\nReality: software engineers from some big tech companies have never heard of Cursor, Claude Code, or Codex.\n\nWe really are in a bubble.",
+    "date": "Aug 13",
+    "likes": 216,
+    "replies": 116,
+    "reposts": 4,
+    "views": 17439
+  },
+  {
+    "name": "Piyush Garg",
+    "handle": "@piyushgarg_dev",
+    "text": "System Design is the new programming language.\nJavascript / Java / Python is the new Assemmbly.",
+    "date": "Aug 11",
+    "likes": 659,
+    "replies": 47,
+    "reposts": 21,
+    "views": 45887
+  },
+  {
+    "name": "Aditya",
+    "handle": "@Aditya_181105",
+    "text": "I have ranked developers based on their favourite programming language.\n\nJAVA                  —        156 IQ\nPYTHON          —        152 IQ\nRUST                 —        146 IQ\nJAVASCRIPT   —         94 IQ\nC++                    —         83 IQ\nPHP                    —         81 IQ",
+    "date": "Aug 8",
+    "likes": 545,
+    "replies": 154,
+    "reposts": 12,
+    "views": 98209
+  },
+  {
+    "name": "Yoshik",
+    "handle": "@AskYoshik",
+    "text": "met a guy who spent 6 months building kubernetes projects and still got rejected because the interview was mostly linux, databases and networking.\n\nthat is basically the devops job market right now.",
+    "date": "Aug 12",
+    "likes": 250,
+    "replies": 7,
+    "reposts": 6,
+    "views": 11225
+  },
+  {
+    "name": "Smart👨‍💻 | Software Engineer",
+    "handle": "@smartnakamoura",
+    "text": "You can know React.\n\nYou can know Node.\n\nYou can know Python.\n\nYou can know AWS.\n\nAnd still have absolutely no idea how to get someone to pay you for your skills.\n\nThat’s a skill too.",
+    "date": "Aug 11",
+    "likes": 304,
+    "replies": 32,
+    "reposts": 27,
+    "views": 8624
+  },
+  {
+    "name": "Mari",
+    "handle": "@Tech_girl",
+    "text": "Imagine being a developer, you spend 20 years learning algorithms, system design, databases, and debugging. AI solves the ticket before you’ve finished reading it.\n\nWhat exactly are junior developers supposed to do now?",
+    "date": "Aug 3",
+    "likes": 190,
+    "replies": 128,
+    "reposts": 4,
+    "views": 25018
+  },
+  {
+    "name": "Uday👨‍💻",
+    "handle": "@uday_devops",
+    "text": "A REST API suddenly takes 10 seconds instead of 200ms.\n\nWhere do you start debugging?",
+    "date": "Aug 2",
+    "likes": 145,
+    "replies": 60,
+    "reposts": 8,
+    "views": 19621
   },
   {
     "name": "Suhas",
     "handle": "@zuess05",
     "text": "Hot take:\n\nVibe coding is making design more important than code.",
     "date": "Aug 13",
-    "likes": 221,
+    "likes": 225,
     "replies": 75,
     "reposts": 14,
-    "views": 9179
+    "views": 9387
   },
   {
     "name": "pc",
@@ -37,17 +107,7 @@
     "likes": 576,
     "replies": 313,
     "reposts": 26,
-    "views": 56234
-  },
-  {
-    "name": "Pri",
-    "handle": "@solopribuilds",
-    "text": "Hot Take:\n\nVibe coding doesn’t work at scale.",
-    "date": "Aug 11",
-    "likes": 630,
-    "replies": 345,
-    "reposts": 24,
-    "views": 146590
+    "views": 56235
   },
   {
     "name": "The codewali",
@@ -87,7 +147,7 @@
     "likes": 1162,
     "replies": 207,
     "reposts": 51,
-    "views": 74301
+    "views": 74303
   },
   {
     "name": "Ben Sage",
@@ -98,5 +158,45 @@
     "replies": 54,
     "reposts": 3,
     "views": 7470
+  },
+  {
+    "name": "Juned Khatri | Engineer Turned Recruiter 🇮🇳",
+    "handle": "@hijunedkhatri",
+    "text": "salesforce developer is such an underrated role bro.\n\nhad no idea about the pay scale and demand. safe to say that the pay's better than your typical frontend and backend role.\n\nstrange.",
+    "date": "Aug 11",
+    "likes": 801,
+    "replies": 30,
+    "reposts": 16,
+    "views": 64744
+  },
+  {
+    "name": "Shravani",
+    "handle": "@shrav_10",
+    "text": "Imagine going on a date with a developer boy, and he ends up becoming your & your startup’s co-founder.\n\nHe handles the frontend, you handle the backend, and together you build the startup",
+    "date": "Aug 10",
+    "likes": 442,
+    "replies": 109,
+    "reposts": 8,
+    "views": 35835
+  },
+  {
+    "name": "♡ mari/cohe ♡",
+    "handle": "@noinconsistency",
+    "text": "i don't think my classmates understand what a programming language is. half of the questions they ask are just \"can i do X in Y programming language\" like yeah man you can indeed generate random numbers in javascript",
+    "date": "Aug 6",
+    "likes": 3142,
+    "replies": 32,
+    "reposts": 58,
+    "views": 45662
+  },
+  {
+    "name": "• nanou •",
+    "handle": "@NanouuSymeon",
+    "text": "Become FrontEnd Developer in 200 days:\n\n- HTML (20 days)\n- CSS (30 days)\n- Javascript (60 days)\n- CSS frameworks (20 days)\n- Git (15 days)\n- GitHub (15 days)\n- React (40 days)\n\nSo you can do it?",
+    "date": "Aug 8",
+    "likes": 214,
+    "replies": 33,
+    "reposts": 14,
+    "views": 10318
   }
 ]
