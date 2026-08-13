@@ -555,7 +555,7 @@ function Footer() {
             INSIDETHEFORYOU
           </span>
           <div style={{ display: 'flex', gap: 24, alignItems: 'center' }} className="small mono">
-            <a href="https://github.com/xai-org/x-algorithm" target="_blank" rel="noreferrer">
+            <a href="https://github.com/dabit3/learn-the-algorithm" target="_blank" rel="noreferrer">
               Source code ↗
             </a>
             <a href="https://deepwiki.com/xai-org/x-algorithm/" target="_blank" rel="noreferrer">

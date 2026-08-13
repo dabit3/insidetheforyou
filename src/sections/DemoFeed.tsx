@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Reveal, Section } from '../components/Reveal'
 import realTweets from '../data/tweets.json'
@@ -285,6 +285,7 @@ type RealTweet = {
   replies: number
   reposts: number
   views: number
+  url?: string
 }
 
 const FALLBACK_TWEET: RealTweet = {
@@ -296,6 +297,7 @@ const FALLBACK_TWEET: RealTweet = {
   replies: 310,
   reposts: 180,
   views: 291000,
+  url: '',
 }
 
 const REAL_TWEETS: RealTweet[] =
@@ -327,9 +329,12 @@ function colorOf(handle: string): string {
   return AVATAR_COLORS[h % AVATAR_COLORS.length]
 }
 
+function avatarUrl(handle: string): string {
+  return `https://unavatar.io/x/${handle.replace(/^@/, '')}?fallback=false`
+}
+
 function Avatar({ name, handle }: { name: string; handle: string }) {
   const [failed, setFailed] = useState(false)
-  const username = handle.replace(/^@/, '')
   if (failed) {
     return (
       <div className="tweet-avatar" style={{ background: colorOf(handle) }}>
@@ -340,11 +345,10 @@ function Avatar({ name, handle }: { name: string; handle: string }) {
   return (
     <img
       className="tweet-avatar"
-      src={`https://unavatar.io/x/${username}`}
+      src={avatarUrl(handle)}
       alt={name}
       width={40}
       height={40}
-      loading="lazy"
       onError={() => setFailed(true)}
     />
   )
@@ -353,6 +357,14 @@ function Avatar({ name, handle }: { name: string; handle: string }) {
 export function ActionEffects() {
   const [active, setActive] = useState<ActionFx | null>(null)
   const [tweetIndex, setTweetIndex] = useState(() => Math.floor(Math.random() * REAL_TWEETS.length))
+
+  // Preload all avatars once so cycling between posts is instant.
+  useEffect(() => {
+    for (const t of REAL_TWEETS) {
+      const img = new Image()
+      img.src = avatarUrl(t.handle)
+    }
+  }, [])
 
   const shuffleTweet = () => {
     if (REAL_TWEETS.length < 2) return
@@ -393,16 +405,31 @@ export function ActionEffects() {
               <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                 <Avatar key={tweet.handle} name={tweet.name} handle={tweet.handle} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', flexWrap: 'wrap' }}>
-                    <span style={{ fontWeight: 600, fontSize: 14 }}>{tweet.name}</span>
-                    <span className="mono" style={{ fontSize: 12, opacity: 0.45 }}>
-                      {tweet.handle}
-                      {tweet.date ? ` · ${tweet.date}` : ''}
-                    </span>
-                  </div>
-                  <p style={{ marginTop: 6, fontSize: 15, lineHeight: 1.5, whiteSpace: 'pre-line' }}>
-                    {tweet.text}
-                  </p>
+                  <a
+                    className="tweet-link"
+                    href={tweet.url || undefined}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => {
+                      if (!tweet.url) e.preventDefault()
+                    }}
+                  >
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', flexWrap: 'wrap' }}>
+                      <span style={{ fontWeight: 600, fontSize: 14 }}>{tweet.name}</span>
+                      <span className="mono" style={{ fontSize: 12, opacity: 0.45 }}>
+                        {tweet.handle}
+                        {tweet.date ? ` · ${tweet.date}` : ''}
+                      </span>
+                      {tweet.url && (
+                        <span className="mono tweet-link-hint" style={{ fontSize: 11, opacity: 0.4 }}>
+                          view on X ↗
+                        </span>
+                      )}
+                    </div>
+                    <p style={{ marginTop: 6, fontSize: 15, lineHeight: 1.5, whiteSpace: 'pre-line' }}>
+                      {tweet.text}
+                    </p>
+                  </a>
                   <p className="mono" style={{ marginTop: 12, fontSize: 12, opacity: 0.5 }}>
                     {fmt(tweet.replies)} replies · {fmt(tweet.reposts)} reposts · {fmt(tweet.likes)}{' '}
                     likes · {fmt(tweet.views)} views
@@ -493,9 +520,8 @@ export function ActionEffects() {
 
       <Reveal delay={0.2}>
         <p className="small" style={{ marginTop: 24 }}>
-          The asymmetry is the lesson: positive signals are whispers, and negative signals are
-          screams. A few deliberate "not interested" taps reshape your feed faster than one hundred
-          likes.
+          Negative signals are much stronger than positive signals. A few "not interested" taps
+          change your feed faster than one hundred likes.
         </p>
       </Reveal>
     </Section>

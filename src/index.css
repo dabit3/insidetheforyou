@@ -389,6 +389,25 @@ body {
   box-shadow: 0 0 0 rgba(194, 42, 42, 0.55);
 }
 
+.aura-btn.neutral {
+  color: var(--ink);
+  border-color: var(--ink);
+  background: transparent;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.aura-btn.neutral:hover {
+  background: var(--ink);
+  color: var(--white);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 rgba(5, 5, 5, 0.55);
+}
+
+.aura-btn.neutral:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 rgba(5, 5, 5, 0.55);
+}
+
 /* Full-screen aura flash */
 .aura-flash {
   position: fixed;
@@ -858,6 +877,20 @@ body {
 
 .fx-btn.bad:active {
   box-shadow: 0 0 0 rgba(194, 42, 42, 0.5);
+}
+
+.tweet-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.tweet-link-hint {
+  transition: opacity 0.15s;
+}
+
+.tweet-link:hover .tweet-link-hint {
+  opacity: 0.9 !important;
 }
 
 .fx-panel {

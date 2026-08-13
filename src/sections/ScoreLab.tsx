@@ -85,6 +85,9 @@ export function ScoreLab() {
         <button className="aura-btn bad" onClick={negativeAura}>
           Negative aura <span style={{ opacity: 0.6 }}>↓</span>
         </button>
+        <button className="aura-btn neutral" onClick={() => setOn(new Set(['fav', 'reply']))}>
+          Reset <span style={{ opacity: 0.6 }}>↺</span>
+        </button>
       </div>
 
       <div style={{ marginTop: 16, display: 'flex', gap: 10, flexWrap: 'wrap', maxWidth: 820 }}>

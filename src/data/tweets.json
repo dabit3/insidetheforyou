@@ -1,33 +1,80 @@
 [
   {
+    "name": "martin_casado",
+    "handle": "@martin_casado",
+    "text": "Maybe it's because I'm a VC dev. But I feel AI code generation is saturated. Nearly all the time I spend now are architectural or dealing with semantic issues (scale, performance trade offs etc.). And I don't think I've seen meaningful improvement here since Opus 4.5 or so.",
+    "date": "Aug 13",
+    "likes": 363,
+    "replies": 84,
+    "reposts": 16,
+    "views": 21949,
+    "url": "https://x.com/martin_casado/status/2087952174856958090"
+  },
+  {
     "name": "Emil Kowalski",
     "handle": "@emilkowalski",
     "text": "It’s impressive how fast Grok is improving after Cursor acquisition.\n\nIt shows how important good data is for these models and explains why Gemini is struggling at coding since they have no popular harness to get training data from.",
     "date": "Aug 13",
-    "likes": 1137,
+    "likes": 1140,
     "replies": 44,
     "reposts": 19,
-    "views": 38360
+    "views": 38725,
+    "url": "https://x.com/emilkowalski/status/2087942414992355514"
   },
   {
-    "name": "Valentin Ignatev",
-    "handle": "@valigo",
-    "text": "I'll agree that AI is good at programming when I see influx of instantly fast, beautiful, and resource-efficient native desktop software.\nSo far everything like this comes from dominantly human-driven programming with AI being a helpful tool at best.",
+    "name": "Sahil Lavingia",
+    "handle": "@shl",
+    "text": "Reading code after AI is like reading books after social media",
     "date": "Aug 13",
-    "likes": 227,
-    "replies": 18,
-    "reposts": 3,
-    "views": 4858
+    "likes": 153,
+    "replies": 8,
+    "reposts": 7,
+    "views": 13928,
+    "url": "https://x.com/shl/status/2087896643748479384"
+  },
+  {
+    "name": "Pratham",
+    "handle": "@Prathkum",
+    "text": "How did we manage to write code for so many years without AI?",
+    "date": "Aug 13",
+    "likes": 156,
+    "replies": 132,
+    "reposts": 4,
+    "views": 19042,
+    "url": "https://x.com/Prathkum/status/2087879134701826054"
+  },
+  {
+    "name": "Suhas",
+    "handle": "@zuess05",
+    "text": "Hot take:\n\nVibe coding is making design more important than code.",
+    "date": "Aug 13",
+    "likes": 230,
+    "replies": 75,
+    "reposts": 14,
+    "views": 9553,
+    "url": "https://x.com/zuess05/status/2087877263174046121"
   },
   {
     "name": "Pri",
     "handle": "@solopribuilds",
     "text": "X: Everyone is vibe coding.\n\nReality: software engineers from some big tech companies have never heard of Cursor, Claude Code, or Codex.\n\nWe really are in a bubble.",
     "date": "Aug 13",
-    "likes": 216,
-    "replies": 116,
+    "likes": 220,
+    "replies": 117,
     "reposts": 4,
-    "views": 17439
+    "views": 17816,
+    "url": "https://x.com/solopribuilds/status/2087842251246284909"
+  },
+  {
+    "name": "Ryan Carniato",
+    "handle": "@RyanCarniato",
+    "text": "Ok we're on the front page of https://news.ycombinator.com/ \n\nIt's been a minute. But I'm glad we can still talk about innovation in the frontend in an age of AI.",
+    "date": "Aug 13",
+    "likes": 123,
+    "replies": 10,
+    "reposts": 4,
+    "views": 7960,
+    "url": "https://x.com/RyanCarniato/status/2087996144584737236"
   },
   {
     "name": "Piyush Garg",
@@ -37,67 +84,52 @@
     "likes": 659,
     "replies": 47,
     "reposts": 21,
-    "views": 45887
+    "views": 45887,
+    "url": "https://x.com/piyushgarg_dev/status/2087066900631347390"
   },
   {
-    "name": "Aditya",
-    "handle": "@Aditya_181105",
-    "text": "I have ranked developers based on their favourite programming language.\n\nJAVA                  —        156 IQ\nPYTHON          —        152 IQ\nRUST                 —        146 IQ\nJAVASCRIPT   —         94 IQ\nC++                    —         83 IQ\nPHP                    —         81 IQ",
-    "date": "Aug 8",
-    "likes": 545,
-    "replies": 154,
-    "reposts": 12,
-    "views": 98209
-  },
-  {
-    "name": "Yoshik",
-    "handle": "@AskYoshik",
-    "text": "met a guy who spent 6 months building kubernetes projects and still got rejected because the interview was mostly linux, databases and networking.\n\nthat is basically the devops job market right now.",
-    "date": "Aug 12",
-    "likes": 250,
-    "replies": 7,
-    "reposts": 6,
-    "views": 11225
-  },
-  {
-    "name": "Smart👨‍💻 | Software Engineer",
-    "handle": "@smartnakamoura",
-    "text": "You can know React.\n\nYou can know Node.\n\nYou can know Python.\n\nYou can know AWS.\n\nAnd still have absolutely no idea how to get someone to pay you for your skills.\n\nThat’s a skill too.",
-    "date": "Aug 11",
-    "likes": 304,
-    "replies": 32,
-    "reposts": 27,
-    "views": 8624
-  },
-  {
-    "name": "Mari",
-    "handle": "@Tech_girl",
-    "text": "Imagine being a developer, you spend 20 years learning algorithms, system design, databases, and debugging. AI solves the ticket before you’ve finished reading it.\n\nWhat exactly are junior developers supposed to do now?",
-    "date": "Aug 3",
-    "likes": 190,
-    "replies": 128,
-    "reposts": 4,
-    "views": 25018
-  },
-  {
-    "name": "Uday👨‍💻",
-    "handle": "@uday_devops",
-    "text": "A REST API suddenly takes 10 seconds instead of 200ms.\n\nWhere do you start debugging?",
-    "date": "Aug 2",
-    "likes": 145,
-    "replies": 60,
+    "name": "L3 Tweet Engineer",
+    "handle": "@MegaBasedChad",
+    "text": "It’s a city full of engineers and biz dev people. It’s never going to be cool because Cool can’t be studied like GMAT, and there is no Leetcode for being interesting",
+    "date": "Aug 9",
+    "likes": 313,
+    "replies": 15,
     "reposts": 8,
-    "views": 19621
+    "views": 12460,
+    "url": "https://x.com/MegaBasedChad/status/2086531155315339688"
   },
   {
-    "name": "Suhas",
-    "handle": "@zuess05",
-    "text": "Hot take:\n\nVibe coding is making design more important than code.",
+    "name": "Taelin",
+    "handle": "@VictorTaelin",
+    "text": "Previewing: Bend2\n\nA new programming language.\n- as fast as C\n- as parallel as CUDA\n- as scalable as Go\n- with formal proofs, just like Lean\n\nLaunching today, for a select group.\n\n(I'm the only member of the select group)",
     "date": "Aug 13",
-    "likes": 225,
-    "replies": 75,
+    "likes": 960,
+    "replies": 39,
     "reposts": 14,
-    "views": 9387
+    "views": 46175,
+    "url": "https://x.com/VictorTaelin/status/2087976080401408451"
+  },
+  {
+    "name": "Strace",
+    "handle": "@straceX",
+    "text": "Most C++ zero-cost abstractions are only zero-cost if you have an omniscient compiler, an infinite instruction cache, and never actually need to step through a debugger in your life.",
+    "date": "Aug 12",
+    "likes": 241,
+    "replies": 12,
+    "reposts": 13,
+    "views": 9641,
+    "url": "https://x.com/straceX/status/2087642604855005624"
+  },
+  {
+    "name": "Antonio Sarosi",
+    "handle": "@antoniosarosi",
+    "text": "C kernel hackers from the 90s parsing TCP packets by hand used to say Python programmers are not real programmers because Python is not a real programming language.\n\nNow a Python dev that can do CRUDs because he understands JSON has the audacity to call others \"vibe coders\". lmao",
+    "date": "Aug 11",
+    "likes": 184,
+    "replies": 11,
+    "reposts": 7,
+    "views": 9341,
+    "url": "https://x.com/antoniosarosi/status/2087292951130988731"
   },
   {
     "name": "pc",
@@ -107,7 +139,8 @@
     "likes": 576,
     "replies": 313,
     "reposts": 26,
-    "views": 56235
+    "views": 56235,
+    "url": "https://x.com/pcshipp/status/2087050303900426414"
   },
   {
     "name": "The codewali",
@@ -117,7 +150,8 @@
     "likes": 213,
     "replies": 128,
     "reposts": 3,
-    "views": 14812
+    "views": 14812,
+    "url": "https://x.com/the_codewala/status/2086429639766130851"
   },
   {
     "name": "Ardent_Dev",
@@ -127,7 +161,19 @@
     "likes": 253,
     "replies": 132,
     "reposts": 17,
-    "views": 12665
+    "views": 12665,
+    "url": "https://x.com/ardent__dev/status/2086409823395193267"
+  },
+  {
+    "name": "fj",
+    "handle": "@fjzeit",
+    "text": "Hot take: every truly vibe-coded app will be abandoned within 12 months due to accelerated code entropy and the \"developer's\" complete ignorance over how it actually works. also, security issues abound.",
+    "date": "Aug 9",
+    "likes": 1979,
+    "replies": 115,
+    "reposts": 110,
+    "views": 148213,
+    "url": "https://x.com/fjzeit/status/2086396198467096856"
   },
   {
     "name": "Suni",
@@ -137,7 +183,8 @@
     "likes": 138,
     "replies": 97,
     "reposts": 8,
-    "views": 12341
+    "views": 12341,
+    "url": "https://x.com/suni_code/status/2086324791091642641"
   },
   {
     "name": "Josh",
@@ -147,7 +194,8 @@
     "likes": 1162,
     "replies": 207,
     "reposts": 51,
-    "views": 74303
+    "views": 74303,
+    "url": "https://x.com/joshmanders/status/2086245810010755571"
   },
   {
     "name": "Ben Sage",
@@ -157,46 +205,117 @@
     "likes": 134,
     "replies": 54,
     "reposts": 3,
-    "views": 7470
+    "views": 7470,
+    "url": "https://x.com/ben_sage/status/2086213649694425166"
   },
   {
-    "name": "Juned Khatri | Engineer Turned Recruiter 🇮🇳",
-    "handle": "@hijunedkhatri",
-    "text": "salesforce developer is such an underrated role bro.\n\nhad no idea about the pay scale and demand. safe to say that the pay's better than your typical frontend and backend role.\n\nstrange.",
-    "date": "Aug 11",
-    "likes": 801,
-    "replies": 30,
-    "reposts": 16,
-    "views": 64744
-  },
-  {
-    "name": "Shravani",
-    "handle": "@shrav_10",
-    "text": "Imagine going on a date with a developer boy, and he ends up becoming your & your startup’s co-founder.\n\nHe handles the frontend, you handle the backend, and together you build the startup",
-    "date": "Aug 10",
-    "likes": 442,
-    "replies": 109,
+    "name": "Lukáš Hozda",
+    "handle": "@LukasHozda",
+    "text": "Notice how he didn't put any qualifier next to Rust, this is because Rust is good for all of the mentioned categories, including celibacy",
+    "date": "Aug 9",
+    "likes": 191,
+    "replies": 9,
     "reposts": 8,
-    "views": 35835
+    "views": 9737,
+    "url": "https://x.com/LukasHozda/status/2086588143709430171"
   },
   {
-    "name": "♡ mari/cohe ♡",
-    "handle": "@noinconsistency",
-    "text": "i don't think my classmates understand what a programming language is. half of the questions they ask are just \"can i do X in Y programming language\" like yeah man you can indeed generate random numbers in javascript",
-    "date": "Aug 6",
-    "likes": 3142,
-    "replies": 32,
-    "reposts": 58,
-    "views": 45662
+    "name": "Forrest Knight",
+    "handle": "@ForrestPKnight",
+    "text": "Everything is going to be written Rust one day. Rust is inevitable.",
+    "date": "Jul 29",
+    "likes": 331,
+    "replies": 86,
+    "reposts": 19,
+    "views": 43856,
+    "url": "https://x.com/ForrestPKnight/status/2082493489590186078"
   },
   {
-    "name": "• nanou •",
-    "handle": "@NanouuSymeon",
-    "text": "Become FrontEnd Developer in 200 days:\n\n- HTML (20 days)\n- CSS (30 days)\n- Javascript (60 days)\n- CSS frameworks (20 days)\n- Git (15 days)\n- GitHub (15 days)\n- React (40 days)\n\nSo you can do it?",
+    "name": "Zed",
+    "handle": "@zeddotdev",
+    "text": "Just another Tuesday for a @rustlang dev",
+    "date": "Jul 26",
+    "likes": 994,
+    "replies": 18,
+    "reposts": 23,
+    "views": 81827,
+    "url": "https://x.com/zeddotdev/status/2081444849241240043"
+  },
+  {
+    "name": "Damian Barabonkov",
+    "handle": "@damian_b",
+    "text": "when i was learning C i hit segfaults constantly\ngot good at C\nstopped hitting them\nmemory safety is 95% skill issue\nrust is for the other 5%",
+    "date": "Jul 25",
+    "likes": 303,
+    "replies": 27,
+    "reposts": 9,
+    "views": 19597,
+    "url": "https://x.com/damian_b/status/2081018315712213419"
+  },
+  {
+    "name": "Wise",
+    "handle": "@trikcode",
+    "text": "i tried to write a simple SQL query without AI today.\n\nstared at the screen for 4 minutes like I don't know english.   \n\nwe are simply losing our minds.",
+    "date": "Jul 20",
+    "likes": 3180,
+    "replies": 292,
+    "reposts": 143,
+    "views": 129136,
+    "url": "https://x.com/trikcode/status/2079086777223061870"
+  },
+  {
+    "name": "Ali Lakrakbi 🇲🇦 🚗🔌",
+    "handle": "@alilakrakbi",
+    "text": "Partially because of an AI error I burned yesterday an industrial controller costing me 15.000 DH. AI code was wrong, I thought it was my cabling, started debugging on cables, and without knowing one of the control cables touched a live 230V inside a power supply, and boom.",
     "date": "Aug 8",
-    "likes": 214,
-    "replies": 33,
-    "reposts": 14,
-    "views": 10318
+    "likes": 143,
+    "replies": 22,
+    "reposts": 2,
+    "views": 14778,
+    "url": "https://x.com/alilakrakbi/status/2086030813720694881"
+  },
+  {
+    "name": "Seth Raphael",
+    "handle": "@magicseth",
+    "text": "A junior dev asked the staff engineer: \"How do I know if the AI's code is correct?\"\nThe staff engineer replied: \"How do you know if yours is?\"\nThe junior dev was enlightened. Prod went down.",
+    "date": "Jul 15",
+    "likes": 10830,
+    "replies": 62,
+    "reposts": 450,
+    "views": 338452,
+    "url": "https://x.com/magicseth/status/2077474893571227663"
+  },
+  {
+    "name": "Valentin Ignatev",
+    "handle": "@valigo",
+    "text": "I swear with C++ you never know if something is real or a shitpost. C++ is the comedy of programming languages",
+    "date": "Jul 8",
+    "likes": 565,
+    "replies": 21,
+    "reposts": 17,
+    "views": 25711,
+    "url": "https://x.com/valigo/status/2074886155519017305"
+  },
+  {
+    "name": "vivian",
+    "handle": "@vheeorji22",
+    "text": "Seeing senior data analysts talk about advanced ML models while I’m here celebrating because my complex SQL query worked on the first try 😂\n\nHonestly, I’m just enjoying the little wins,\nEveryone started somewhere.",
+    "date": "Aug 8",
+    "likes": 157,
+    "replies": 11,
+    "reposts": 16,
+    "views": 4452,
+    "url": "https://x.com/vheeorji22/status/2086123308529951030"
+  },
+  {
+    "name": "SaltyAom",
+    "handle": "@saltyAom",
+    "text": "This tweet and the quoted one remind me how out of touch non-technical people understand how software development work xd",
+    "date": "Jul 16",
+    "likes": 2501,
+    "replies": 19,
+    "reposts": 98,
+    "views": 51815,
+    "url": "https://x.com/saltyAom/status/2077727334703194251"
   }
 ]
