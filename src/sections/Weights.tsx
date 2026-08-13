@@ -24,7 +24,7 @@ const MAX = Math.sqrt(234)
 
 export function Weights() {
   return (
-    <Section id="weights" theme="light" step={4}>
+    <Section id="weights" theme="light">
       <Reveal>
         <h2 className="display">
           Every action has <span className="dim">a price tag.</span>
@@ -32,7 +32,7 @@ export function Weights() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          Each predicted action carries a fixed weight — a measure of how much the algorithm cares
+          Each predicted action carries a fixed weight: a measure of how much the algorithm cares
           about it. These are the actual values from the open-sourced code. Notice how small the
           rewards are, and how enormous the punishments.
         </p>
@@ -64,7 +64,7 @@ export function Weights() {
       <Reveal delay={0.2}>
         <p className="small" style={{ marginTop: 24 }}>
           Bars use a square-root scale so the small weights stay visible. Hatched bars are negative
-          weights — actions the algorithm actively tries to avoid provoking.
+          weights, actions the algorithm actively tries to avoid provoking.
         </p>
       </Reveal>
     </Section>

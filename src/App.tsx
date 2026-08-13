@@ -1,7 +1,6 @@
 import { motion, useScroll, useSpring } from 'framer-motion'
 import { Reveal, Section } from './components/Reveal'
 import { ScoreLab } from './sections/ScoreLab'
-import { Filters } from './sections/Filters'
 import { Adjustments } from './sections/Adjustments'
 import { Weights } from './sections/Weights'
 
@@ -10,7 +9,6 @@ const NAV = [
   ['Signals', '#signals'],
   ['Weights', '#weights'],
   ['Scoring', '#scoring'],
-  ['Filters', '#filters'],
   ['Takeaways', '#takeaways'],
 ]
 
@@ -95,7 +93,7 @@ function Hero() {
         </Reveal>
         <Reveal delay={0.2}>
           <p className="lede">
-            Every time you open the For You feed, an algorithm assembles it from scratch — just for
+            Every time you open the For You feed, an algorithm assembles it from scratch, just for
             you, in that moment. Scroll to learn how it works, no engineering degree required.
           </p>
         </Reveal>
@@ -121,7 +119,7 @@ function Hero() {
 
 function Fresh() {
   return (
-    <Section id="fresh" theme="light" step={0}>
+    <Section id="fresh" theme="light">
       <Reveal>
         <h2 className="display">
           Your feed is built <span className="dim">fresh, every single time.</span>
@@ -131,7 +129,7 @@ function Fresh() {
         <p className="lede">
           There is no pre-made timeline waiting for you. When you open or refresh the app, a system
           called <span className="mono">Home Mixer</span> runs a pipeline that gathers candidate
-          posts, scores them, and filters them — all within a moment.
+          posts, scores them, and filters them, all within a moment.
         </p>
       </Reveal>
       <div style={{ marginTop: 56 }}>
@@ -166,7 +164,7 @@ function Fresh() {
 
 function Sources() {
   return (
-    <Section id="sources" theme="dark" step={1}>
+    <Section id="sources" theme="dark">
       <Reveal>
         <h2 className="display">
           Posts come from <span className="dim">two worlds.</span>
@@ -175,7 +173,7 @@ function Sources() {
       <Reveal delay={0.1}>
         <p className="lede">
           Before anything is ranked, the algorithm collects candidates from accounts you follow and
-          from the rest of X — then judges them all with the same model.
+          from the rest of X, then judges them all with the same model.
         </p>
       </Reveal>
       <div style={{ marginTop: 48, maxWidth: 760 }}>
@@ -201,7 +199,7 @@ function Sources() {
           </div>
         ))}
         <p className="small" style={{ marginTop: 16 }}>
-          Maximum candidates fetched per source on each refresh — roughly 40% from your follows,
+          Maximum candidates fetched per source on each refresh: roughly 40% from your follows,
           60% from discovery, before scoring decides what survives.
         </p>
       </div>
@@ -237,7 +235,7 @@ function Sources() {
           </h3>
           <p className="small" style={{ marginTop: 8, color: 'inherit', opacity: 0.7 }}>
             ML retrieval finds posts from strangers whose content looks like things you engage
-            with — by mapping you and every post into the same “taste space” and picking the
+            with, by mapping you and every post into the same “taste space” and picking the
             nearest matches.
           </p>
         </motion.div>
@@ -262,7 +260,7 @@ function Signals() {
     'reposted a launch announcement',
   ]
   return (
-    <Section id="signals" theme="light" step={2}>
+    <Section id="signals" theme="light">
       <Reveal>
         <h2 className="display">
           It doesn't read your mind. <span className="dim">It reads your habits.</span>
@@ -270,7 +268,7 @@ function Signals() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          The single most important input to the ranking model is your recent action history — the
+          The single most important input to the ranking model is your recent action history: the
           running sequence of everything you've engaged with lately. The model reads it like a
           sentence and predicts what you'll do next.
         </p>
@@ -293,7 +291,9 @@ function Signals() {
               fontSize: 13,
             }}
           >
-            <span style={{ opacity: 0.4 }}>{`t-${actions.length - i}`}</span>
+            <span style={{ opacity: 0.4 }}>
+              {actions.length - i === 1 ? 'just now' : `${actions.length - i} actions ago`}
+            </span>
             <span>you {a}</span>
           </motion.div>
         ))}
@@ -318,7 +318,7 @@ function Predictions() {
     ['you say “not interested”', 0.002],
   ]
   return (
-    <Section theme="dark" step={3}>
+    <Section theme="dark">
       <Reveal>
         <h2 className="display">
           For every post, one question: <span className="dim">“what would you do with this?”</span>
@@ -327,7 +327,7 @@ function Predictions() {
       <Reveal delay={0.1}>
         <p className="lede">
           A transformer model (the same family of AI behind chatbots) estimates the probability of
-          each action you might take — good and bad — for every candidate post.
+          each action you might take, good and bad, for every candidate post.
         </p>
       </Reveal>
       <div style={{ marginTop: 48, maxWidth: 760 }}>
@@ -368,7 +368,7 @@ function Visibility() {
     ['Drop', 'Never shown to you', 'Blocked authors, policy violations, spam.'],
   ]
   return (
-    <Section theme="dark" step={7}>
+    <Section theme="dark">
       <Reveal>
         <h2 className="display">
           Ranking picks the order. <span className="dim">A separate gate decides visibility.</span>
@@ -390,7 +390,6 @@ function Visibility() {
             viewport={{ once: true, margin: '-60px' }}
             transition={{ delay: i * 0.12, duration: 0.5 }}
           >
-            <span className="tag">{String(i + 1).padStart(2, '0')}</span>
             <h3 className="cell-title" style={{ fontSize: 22 }}>
               {verdict}
             </h3>
@@ -405,7 +404,7 @@ function Visibility() {
       </div>
       <Reveal delay={0.25}>
         <p className="small" style={{ marginTop: 24 }}>
-          Recommendations from accounts you don't follow face extra, stricter rules — the same
+          Recommendations from accounts you don't follow face extra, stricter rules: the same
           post can be shown to a follower but not recommended to a stranger.
         </p>
       </Reveal>
@@ -425,7 +424,7 @@ function Takeaways() {
     ],
     [
       'Negative feedback is powerful',
-      '“Not interested”, mute, and block carry huge negative weights. One report outweighs hundreds of likes. Use them — they work.',
+      '“Not interested”, mute, and block carry huge negative weights. One report outweighs hundreds of likes. Use them. They work.',
     ],
     [
       'Your feed resets constantly',
@@ -457,7 +456,6 @@ function Takeaways() {
             viewport={{ once: true, margin: '-40px' }}
             transition={{ delay: (i % 2) * 0.1, duration: 0.5 }}
           >
-            <span className="tag">{String(i + 1).padStart(2, '0')}</span>
             <h3 className="cell-title">{title}</h3>
             <p className="small">{body}</p>
           </motion.div>
@@ -529,7 +527,6 @@ export default function App() {
       <Weights />
       <ScoreLab />
       <Adjustments />
-      <Filters />
       <Visibility />
       <Takeaways />
       <Footer />

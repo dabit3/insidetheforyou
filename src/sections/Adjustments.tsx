@@ -47,7 +47,7 @@ function Bars({
 
 export function Adjustments() {
   return (
-    <Section theme="dark" step={6}>
+    <Section theme="dark">
       <Reveal>
         <h2 className="display">
           Then the score <span className="dim">gets adjusted.</span>
@@ -64,7 +64,7 @@ export function Adjustments() {
           <span className="tag">Author diversity</span>
           <h3 className="cell-title">No one gets to dominate</h3>
           <p className="small">
-            Each extra post from the same author is halved in score, down to a floor — so one
+            Each extra post from the same author is halved in score, down to a floor, so one
             prolific account can't take over your feed.
           </p>
           <Bars
@@ -77,7 +77,7 @@ export function Adjustments() {
           <span className="tag">Out-of-network discount</span>
           <h3 className="cell-title">Strangers take a haircut</h3>
           <p className="small">
-            Posts from accounts you don't follow are multiplied by 0.75 — discovery has to earn
+            Posts from accounts you don't follow are multiplied by 0.75, so discovery has to earn
             its place against your own network.
           </p>
           <Bars

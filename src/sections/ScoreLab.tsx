@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Reveal, Section } from '../components/Reveal'
 
@@ -31,6 +31,8 @@ const MAX_ABS = 234
 
 export function ScoreLab() {
   const [on, setOn] = useState<Set<string>>(new Set(['fav', 'reply']))
+  const [aura, setAura] = useState<'good' | 'bad' | null>(null)
+  const [auraKey, setAuraKey] = useState(0)
 
   const toggle = (id: string) => {
     setOn((prev) => {
@@ -41,11 +43,28 @@ export function ScoreLab() {
     })
   }
 
+  const maxAura = () => {
+    setOn(new Set(ACTIONS.filter((a) => a.weight > 0).map((a) => a.id)))
+    setAura('good')
+    setAuraKey((k) => k + 1)
+  }
+  const negativeAura = () => {
+    setOn(new Set(ACTIONS.filter((a) => a.weight < 0).map((a) => a.id)))
+    setAura('bad')
+    setAuraKey((k) => k + 1)
+  }
+
+  useEffect(() => {
+    if (!aura) return
+    const t = setTimeout(() => setAura(null), 1200)
+    return () => clearTimeout(t)
+  }, [aura, auraKey])
+
   const selected = ACTIONS.filter((a) => on.has(a.id))
   const score = selected.reduce((s, a) => s + a.weight, 0)
 
   return (
-    <Section id="scoring" theme="light" step={5}>
+    <Section id="scoring" theme="light">
       <Reveal>
         <h2 className="display">
           Not all engagement <span className="dim">is worth the same.</span>
@@ -60,6 +79,15 @@ export function ScoreLab() {
       </Reveal>
 
       <div style={{ marginTop: 48, display: 'flex', gap: 10, flexWrap: 'wrap', maxWidth: 820 }}>
+        <button className="aura-btn good" onClick={maxAura}>
+          Max aura <span style={{ opacity: 0.6 }}>↑</span>
+        </button>
+        <button className="aura-btn bad" onClick={negativeAura}>
+          Negative aura <span style={{ opacity: 0.6 }}>↓</span>
+        </button>
+      </div>
+
+      <div style={{ marginTop: 16, display: 'flex', gap: 10, flexWrap: 'wrap', maxWidth: 820 }}>
         {ACTIONS.map((a) => (
           <button
             key={a.id}
@@ -74,7 +102,11 @@ export function ScoreLab() {
         ))}
       </div>
 
+      {aura && <div key={`flash-${auraKey}`} className={`aura-flash ${aura}`} />}
+
       <div
+        key={`card-${auraKey}`}
+        className={aura ? `score-card aura-${aura}` : 'score-card'}
         style={{
           marginTop: 40,
           border: '1px solid var(--line-light)',
@@ -104,7 +136,7 @@ export function ScoreLab() {
                 ? 'competes for a spot in your feed'
                 : score === 0
                   ? 'invisible to the ranker'
-                  : 'buried — you will likely never see posts like this'}
+                  : 'buried, you will likely never see posts like this'}
           </span>
         </div>
         <div className="bar-track" style={{ marginTop: 20, height: 14 }}>
