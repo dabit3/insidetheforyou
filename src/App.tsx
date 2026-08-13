@@ -49,7 +49,7 @@ function Nav() {
             borderRight: '1px solid var(--line-light)',
           }}
         >
-          The Algorithm
+          insidetheforyou
         </a>
         <div style={{ flex: 1 }} />
         {NAV.map(([label, href]) => (
@@ -137,7 +137,7 @@ function Fresh() {
       <div style={{ marginTop: 56 }}>
         <div className="cellgrid cols-3">
           {[
-            ['~2,200', 'candidate posts gathered', 'from people you follow and beyond'],
+            ['~3,000', 'candidate posts gathered', 'up to 1,200 from follows + 1,800 from discovery'],
             ['19+', 'actions predicted per post', 'from “likely to like” to “likely to report”'],
             ['1', 'ranked feed, just for you', 'rebuilt on every refresh'],
           ].map(([big, title, sub], i) => (
@@ -178,7 +178,34 @@ function Sources() {
           from the rest of X — then judges them all with the same model.
         </p>
       </Reveal>
-      <div style={{ marginTop: 56 }} className="cellgrid cols-2">
+      <div style={{ marginTop: 48, maxWidth: 760 }}>
+        {(
+          [
+            ['Thunder · people you follow', 1200],
+            ['Phoenix · ML discovery', 1000],
+            ['SimClusters · taste communities', 800],
+          ] as [string, number][]
+        ).map(([label, n], i) => (
+          <div className="weight-row" key={label}>
+            <span className="weight-label">{label}</span>
+            <div className="bar-track">
+              <motion.div
+                initial={{ width: 0 }}
+                whileInView={{ width: `${(n / 1200) * 100}%` }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ delay: i * 0.1, duration: 0.7, ease: 'easeOut' }}
+                style={{ height: '100%', background: '#fff' }}
+              />
+            </div>
+            <span className="weight-value">{n.toLocaleString()}</span>
+          </div>
+        ))}
+        <p className="small" style={{ marginTop: 16 }}>
+          Maximum candidates fetched per source on each refresh — roughly 40% from your follows,
+          60% from discovery, before scoring decides what survives.
+        </p>
+      </div>
+      <div style={{ marginTop: 40 }} className="cellgrid cols-2">
         <motion.div
           className="cell"
           initial={{ opacity: 0, x: -30 }}
@@ -454,7 +481,7 @@ function Footer() {
           }}
         >
           <span className="mono" style={{ fontSize: 12, letterSpacing: '0.14em' }}>
-            THE ALGORITHM, EXPLAINED
+            INSIDETHEFORYOU
           </span>
           <div style={{ display: 'flex', gap: 24 }} className="small mono">
             <a href="https://github.com/dabit3/x-algorithm" target="_blank" rel="noreferrer">

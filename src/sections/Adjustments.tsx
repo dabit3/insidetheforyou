@@ -1,11 +1,27 @@
 import { motion } from 'framer-motion'
 import { Reveal, Section } from '../components/Reveal'
 
-function Bars({ values, labels }: { values: number[]; labels: string[] }) {
+function Bars({
+  values,
+  labels,
+  marks,
+}: {
+  values: number[]
+  labels: string[]
+  marks?: string[]
+}) {
   return (
     <div style={{ marginTop: 20, display: 'grid', gap: 10 }}>
       {values.map((v, i) => (
-        <div key={i} style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: 12, alignItems: 'center' }}>
+        <div
+          key={i}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: marks ? '70px 1fr 48px' : '90px 1fr',
+            gap: 12,
+            alignItems: 'center',
+          }}
+        >
           <span className="mono" style={{ fontSize: 11, opacity: 0.6 }}>
             {labels[i]}
           </span>
@@ -18,6 +34,11 @@ function Bars({ values, labels }: { values: number[]; labels: string[] }) {
               style={{ height: '100%', background: 'currentColor' }}
             />
           </div>
+          {marks && (
+            <span className="mono" style={{ fontSize: 11, opacity: 0.6, textAlign: 'right' }}>
+              {marks[i]}
+            </span>
+          )}
         </div>
       ))}
     </div>
@@ -46,7 +67,11 @@ export function Adjustments() {
             Each extra post from the same author is halved in score, down to a floor — so one
             prolific account can't take over your feed.
           </p>
-          <Bars values={[1, 0.5, 0.25, 0.25]} labels={['post 1', 'post 2', 'post 3', 'post 4']} />
+          <Bars
+            values={[1, 0.5, 0.25, 0.25]}
+            labels={['post 1', 'post 2', 'post 3', 'post 4']}
+            marks={['×1.0', '×0.5', '×0.25', '×0.25']}
+          />
         </div>
         <div className="cell" style={{ padding: 28 }}>
           <span className="tag">Out-of-network discount</span>
@@ -55,7 +80,11 @@ export function Adjustments() {
             Posts from accounts you don't follow are multiplied by 0.75 — discovery has to earn
             its place against your own network.
           </p>
-          <Bars values={[1, 0.75]} labels={['followed', 'stranger']} />
+          <Bars
+            values={[1, 0.75]}
+            labels={['followed', 'stranger']}
+            marks={['×1.0', '×0.75']}
+          />
         </div>
         <div className="cell" style={{ padding: 28 }}>
           <span className="tag">New-author boost</span>
