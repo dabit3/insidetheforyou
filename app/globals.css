@@ -68,6 +68,33 @@ a {
   border-top: 1px solid var(--line);
 }
 
+.reveal {
+  animation: reveal-in 1ms linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 30%;
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .animated-number {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
 .section-dark {
   background: var(--ink);
   color: var(--paper);

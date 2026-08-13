@@ -28,7 +28,7 @@ export function Scoring() {
       window.scrollTo({ top: scrollPosition.current, behavior: "instant" });
       scrollPosition.current = null;
     }
-  }, [mutual, values]);
+  });
   const score = useMemo(
     () =>
       scoreActions.reduce((total, action, index) => {
@@ -86,11 +86,9 @@ export function Scoring() {
                           muted={action.muted}
                           value={values[index]}
                           onChange={(value) =>
-                            preserveScroll(() =>
-                              setValues((current) =>
-                                current.map((item, itemIndex) =>
-                                  itemIndex === index ? value : item,
-                                ),
+                            setValues((current) =>
+                              current.map((item, itemIndex) =>
+                                itemIndex === index ? value : item,
                               ),
                             )
                           }

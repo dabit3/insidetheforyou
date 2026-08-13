@@ -4,9 +4,6 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "insidetheforyou",
   description: "A plain-English guide to the For You feed.",
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
