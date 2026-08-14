@@ -532,7 +532,7 @@ body {
   font-size: 56px;
 }
 
-.score-bar {
+.bar-track.score-bar {
   margin-top: 20px;
   height: 14px;
 }
@@ -1278,7 +1278,7 @@ a {
     font-size: 32px;
   }
 
-  .score-bar {
+  .bar-track.score-bar {
     margin-top: 12px;
     height: 10px;
   }
