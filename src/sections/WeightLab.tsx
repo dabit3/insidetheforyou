@@ -163,50 +163,71 @@ export function WeightLab() {
 
   const maxAbs = Math.max(...ranked.map((p) => Math.abs(p.score)), 0.001)
 
-  // Naming: Grok names the configuration on every knob change (debounced),
-  // with the local generator as an instant placeholder and offline fallback.
+  // Naming: the local generator names instantly; the button asks Grok.
+  // Client-side exponential backoff after the first few calls, and the
+  // Worker enforces real rate limits on top of this.
   const localName = useMemo(() => algoName(weights), [weights])
   const configKey = useMemo(() => JSON.stringify(weights), [weights])
   const [aiNames, setAiNames] = useState<Record<string, string>>({})
   const [naming, setNaming] = useState(false)
+  const [cooldownUntil, setCooldownUntil] = useState(0)
+  const [now, setNow] = useState(() => Date.now())
   const nameCache = useRef(new Map<string, string>())
+  const callCount = useRef(0)
   const isDefault = WEIGHT_DEFS.every((d) => weights[d.id] === d.def)
 
+  const cooldownLeft = Math.max(0, Math.ceil((cooldownUntil - now) / 1000))
+
   useEffect(() => {
-    if (isDefault || nameCache.current.has(configKey)) {
-      setNaming(false)
+    if (cooldownUntil <= Date.now()) return
+    const interval = setInterval(() => {
+      setNow(Date.now())
+      if (Date.now() >= cooldownUntil) clearInterval(interval)
+    }, 500)
+    return () => clearInterval(interval)
+  }, [cooldownUntil])
+
+  const alreadyNamed = Boolean(aiNames[configKey])
+
+  const nameIt = async () => {
+    if (naming || cooldownLeft > 0 || isDefault || alreadyNamed) return
+    const cached = nameCache.current.get(configKey)
+    if (cached) {
+      setAiNames((prev) => ({ ...prev, [configKey]: cached }))
       return
     }
-    const controller = new AbortController()
-    const timer = setTimeout(async () => {
-      setNaming(true)
-      try {
-        const res = await fetch('/api/name', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ weights }),
-          signal: controller.signal,
-        })
-        if (!res.ok) throw new Error(`status ${res.status}`)
-        const data = (await res.json()) as { name?: string }
-        if (data.name) {
-          nameCache.current.set(configKey, data.name)
-          setAiNames((prev) => ({ ...prev, [configKey]: data.name as string }))
-        }
-      } catch {
-        /* keep the local fallback name */
-      } finally {
-        setNaming(false)
+    setNaming(true)
+    try {
+      const res = await fetch('/api/name', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ weights }),
+      })
+      if (res.status === 429) {
+        setCooldownUntil(Date.now() + 30_000)
+        return
       }
-    }, 500)
-    return () => {
-      clearTimeout(timer)
-      controller.abort()
+      if (!res.ok) throw new Error(`status ${res.status}`)
+      const data = (await res.json()) as { name?: string }
+      if (data.name) {
+        nameCache.current.set(configKey, data.name)
+        setAiNames((prev) => ({ ...prev, [configKey]: data.name as string }))
+      }
+      // First 3 calls are free; after that the wait doubles: 2s, 4s, 8s... up to 60s.
+      callCount.current += 1
+      if (callCount.current >= 3) {
+        const delay = Math.min(2 ** (callCount.current - 3) * 2, 60)
+        setCooldownUntil(Date.now() + delay * 1000)
+        setNow(Date.now())
+      }
+    } catch {
+      /* keep the local fallback name */
+    } finally {
       setNaming(false)
     }
-  }, [configKey, weights, isDefault])
+  }
 
-  const name = aiNames[configKey] ?? nameCache.current.get(configKey) ?? localName
+  const name = aiNames[configKey] ?? localName
 
   return (
     <Section id="playground" theme="dark">
@@ -237,23 +258,34 @@ export function WeightLab() {
       </div>
 
       <div className="algo-name">
-        <span className="mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.5 }}>
-          You built
-          {naming && <span className="naming-dot"> naming</span>}
-        </span>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={name}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15 }}
-            className="display"
-            style={{ fontSize: 'clamp(22px, 3vw, 32px)', marginTop: 4 }}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <span className="mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.5 }}>
+            You built
+          </span>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={name}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.15 }}
+              className="display"
+              style={{ fontSize: 'clamp(22px, 3vw, 32px)', marginTop: 4 }}
+            >
+              {name}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+        {!isDefault && !alreadyNamed && (
+          <button
+            className="preset-btn"
+            onClick={nameIt}
+            disabled={naming || cooldownLeft > 0}
+            style={naming || cooldownLeft > 0 ? { opacity: 0.5, cursor: 'default' } : undefined}
           >
-            {name}
-          </motion.div>
-        </AnimatePresence>
+            {naming ? 'naming...' : cooldownLeft > 0 ? `wait ${cooldownLeft}s` : 'Ask Grok'}
+          </button>
+        )}
       </div>
 
       <div className="playground-grid" style={{ marginTop: 40 }}>

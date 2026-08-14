@@ -2,9 +2,13 @@
 // The XAI_API_KEY secret is set in the Worker settings (Variables and Secrets)
 // or with: npx wrangler secret put XAI_API_KEY
 
+type RateLimiter = { limit: (options: { key: string }) => Promise<{ success: boolean }> }
+
 type Env = {
   XAI_API_KEY: string
   ASSETS: { fetch: (request: Request) => Promise<Response> }
+  NAME_RATE_LIMITER?: RateLimiter
+  NAME_GLOBAL_LIMITER?: RateLimiter
 }
 
 const DEFAULTS: Record<string, number> = {
@@ -42,6 +46,16 @@ const LABELS: Record<string, string> = {
 async function handleName(request: Request, env: Env): Promise<Response> {
   if (!env.XAI_API_KEY) {
     return Response.json({ error: 'XAI_API_KEY is not configured' }, { status: 500 })
+  }
+
+  // Rate limits: 10/minute per visitor, 100/minute across all visitors.
+  const ip = request.headers.get('cf-connecting-ip') ?? 'unknown'
+  const checks = await Promise.all([
+    env.NAME_RATE_LIMITER?.limit({ key: ip }) ?? { success: true },
+    env.NAME_GLOBAL_LIMITER?.limit({ key: 'global' }) ?? { success: true },
+  ])
+  if (checks.some((c) => !c.success)) {
+    return Response.json({ error: 'rate limited, slow down' }, { status: 429 })
   }
 
   let weights: Record<string, unknown>
