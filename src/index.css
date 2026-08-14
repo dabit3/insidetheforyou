@@ -626,6 +626,18 @@ body {
   max-width: 480px;
 }
 
+.naming-dot {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+  animation: naming-pulse 1s ease-in-out infinite;
+}
+
+@keyframes naming-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.85; }
+}
+
 .slider-row {
   display: grid;
   grid-template-columns: 150px 1fr 60px;

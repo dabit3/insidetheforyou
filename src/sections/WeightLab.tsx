@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Reveal, Section } from '../components/Reveal'
 
@@ -109,8 +109,8 @@ const PRESETS: [string, string, Record<string, number>][] = [
   ],
 ]
 
-// Names the user's custom algorithm from the shape of the knobs.
-// Runs locally: instant, free, and deterministic for a given configuration.
+// Local fallback naming, used while Grok thinks and when the API is unreachable.
+// Deterministic for a given configuration.
 function algoName(w: Record<string, number>): string {
   const isDefault = WEIGHT_DEFS.every((d) => w[d.id] === d.def)
   if (isDefault) return 'Just Regular X'
@@ -162,7 +162,51 @@ export function WeightLab() {
   }, [weights])
 
   const maxAbs = Math.max(...ranked.map((p) => Math.abs(p.score)), 0.001)
-  const name = useMemo(() => algoName(weights), [weights])
+
+  // Naming: Grok names the configuration on every knob change (debounced),
+  // with the local generator as an instant placeholder and offline fallback.
+  const localName = useMemo(() => algoName(weights), [weights])
+  const configKey = useMemo(() => JSON.stringify(weights), [weights])
+  const [aiNames, setAiNames] = useState<Record<string, string>>({})
+  const [naming, setNaming] = useState(false)
+  const nameCache = useRef(new Map<string, string>())
+  const isDefault = WEIGHT_DEFS.every((d) => weights[d.id] === d.def)
+
+  useEffect(() => {
+    if (isDefault || nameCache.current.has(configKey)) {
+      setNaming(false)
+      return
+    }
+    const controller = new AbortController()
+    const timer = setTimeout(async () => {
+      setNaming(true)
+      try {
+        const res = await fetch('/api/name', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ weights }),
+          signal: controller.signal,
+        })
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        const data = (await res.json()) as { name?: string }
+        if (data.name) {
+          nameCache.current.set(configKey, data.name)
+          setAiNames((prev) => ({ ...prev, [configKey]: data.name as string }))
+        }
+      } catch {
+        /* keep the local fallback name */
+      } finally {
+        setNaming(false)
+      }
+    }, 500)
+    return () => {
+      clearTimeout(timer)
+      controller.abort()
+      setNaming(false)
+    }
+  }, [configKey, weights, isDefault])
+
+  const name = aiNames[configKey] ?? nameCache.current.get(configKey) ?? localName
 
   return (
     <Section id="playground" theme="dark">
@@ -195,6 +239,7 @@ export function WeightLab() {
       <div className="algo-name">
         <span className="mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.5 }}>
           You built
+          {naming && <span className="naming-dot"> naming</span>}
         </span>
         <AnimatePresence mode="wait">
           <motion.div
