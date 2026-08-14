@@ -306,41 +306,49 @@ type SimPost = RealTweet & { topic: string }
 
 const CLASSIFIED: SimPost[] = REAL_TWEETS.map((t) => ({ ...t, topic: topicOf(t.text) }))
 
-// Today: up to 4 posts with distinct topics and distinct authors.
-const TODAY: SimPost[] = (() => {
-  const picked: SimPost[] = []
-  const topics = new Set<string>()
-  const authors = new Set<string>()
-  for (const t of CLASSIFIED) {
-    if (picked.length >= 4) break
-    if (topics.has(t.topic) || authors.has(t.handle)) continue
-    topics.add(t.topic)
-    authors.add(t.handle)
-    picked.push(t)
-  }
-  return picked
-})()
-
-// Tomorrow's candidate pool: everything else, at most 3 posts per topic.
-const POOL: SimPost[] = (() => {
-  const todayKeys = new Set(TODAY.map((t) => t.url || t.text))
-  const perTopic: Record<string, number> = {}
-  const pool: SimPost[] = []
-  for (const t of CLASSIFIED) {
-    if (todayKeys.has(t.url || t.text)) continue
-    perTopic[t.topic] = (perTopic[t.topic] ?? 0) + 1
-    if (perTopic[t.topic] > 3) continue
-    pool.push(t)
-  }
-  return pool
-})()
-
 function keyOf(p: SimPost): string {
   return p.url || `${p.handle}-${p.text.slice(0, 24)}`
 }
 
+function shuffled<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+// A fresh random draw on every page load: 4 today posts with distinct topics
+// and authors, plus a candidate pool of at most 4 posts per topic.
+function drawSim(): { today: SimPost[]; pool: SimPost[] } {
+  const deck = shuffled(CLASSIFIED)
+  const today: SimPost[] = []
+  const topics = new Set<string>()
+  const authors = new Set<string>()
+  for (const t of deck) {
+    if (today.length >= 4) break
+    if (topics.has(t.topic) || authors.has(t.handle)) continue
+    topics.add(t.topic)
+    authors.add(t.handle)
+    today.push(t)
+  }
+
+  const todayKeys = new Set(today.map(keyOf))
+  const perTopic: Record<string, number> = {}
+  const pool: SimPost[] = []
+  for (const t of deck) {
+    if (todayKeys.has(keyOf(t))) continue
+    perTopic[t.topic] = (perTopic[t.topic] ?? 0) + 1
+    if (perTopic[t.topic] > 4) continue
+    pool.push(t)
+  }
+  return { today, pool }
+}
+
 export function ActionEffects() {
   const [acts, setActs] = useState<Record<string, SimActionId[]>>({})
+  const [{ today, pool }] = useState(drawSim)
 
   // Preload all avatars once so re-ranking is instant.
   useEffect(() => {
@@ -368,7 +376,7 @@ export function ActionEffects() {
     const dimTopics = new Set<string>()
     const reportedTopics = new Set<string>()
 
-    for (const post of TODAY) {
+    for (const post of today) {
       const taken = acts[keyOf(post)] ?? []
       for (const id of taken) {
         const def = SIM_ACTIONS.find((a) => a.id === id)!
@@ -387,7 +395,7 @@ export function ActionEffects() {
       }
     }
 
-    const ranked = POOL.filter(
+    const ranked = pool.filter(
       (p) => !mutedAuthors.has(p.handle) && !reportedTopics.has(p.topic)
     )
       .map((p) => ({
@@ -418,7 +426,7 @@ export function ActionEffects() {
       parts.join(' · ') || 'nothing yet. act on a post to start training it.'
 
     return { ranked, summary }
-  }, [acts])
+  }, [acts, today, pool])
 
   return (
     <Section theme="light">
@@ -437,7 +445,7 @@ export function ActionEffects() {
       <div className="sim-grid" style={{ marginTop: 48 }}>
         <div>
           <span className="sim-heading mono">Today: act on these</span>
-          {TODAY.map((post) => {
+          {today.map((post) => {
             const taken = acts[keyOf(post)] ?? []
             return (
               <div className="sim-card" key={keyOf(post)}>

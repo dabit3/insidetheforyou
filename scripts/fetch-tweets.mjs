@@ -57,7 +57,7 @@ const JSON_SPEC = `Output ONLY a JSON array, no markdown fences, no commentary. 
 Use the real engagement numbers and the real status URLs from the posts. Do not invent URLs.`
 
 function generalPrompt(topics) {
-  return `Use X search to find 25 popular recent X posts about programming and software engineering. Run several different searches to cover a DIVERSE set of topics, for example:
+  return `Use X search to find 15 popular recent X posts about programming and software engineering. Run several different searches to cover a DIVERSE set of topics, for example:
 ${topics.map((t) => `- ${t}`).join('\n')}
 
 Requirements for each post:
@@ -66,28 +66,44 @@ Requirements for each post:
 - a standalone TEXT post, not a reply and not an image or video meme (the text must stand on its own)
 - text between 40 and 280 characters
 - interesting, insightful, or funny to a developer audience
-- each post must come from a DIFFERENT author (25 different accounts), and include a mix of well-known and smaller accounts
+- clearly about software, programming, or the tech industry; no politics, no general news, no sports
+- each post must come from a DIFFERENT author (15 different accounts), and include a mix of well-known and smaller accounts
 - no meme aggregator accounts (for example, no ProgrammerHumor accounts)
 - no offensive content
 
 ${JSON_SPEC}`
 }
 
-const GENERAL_PROMPT_A = generalPrompt([
-  'AI and coding agents',
-  'web development, JavaScript, TypeScript, React',
-  'career advice and interviews in tech',
-  'indie hacking and building products',
-  'developer humor and hot takes',
-])
-
-const GENERAL_PROMPT_B = generalPrompt([
-  'systems programming, Rust, Go, C, Zig',
-  'databases, networking, and infrastructure',
-  'open source and developer tools',
-  'programming languages and compilers',
-  'debugging and production incident stories',
-])
+const GENERAL_PROMPTS = [
+  generalPrompt([
+    'AI and coding agents',
+    'web development, JavaScript, TypeScript, React',
+    'career advice and interviews in tech',
+    'indie hacking and building products',
+    'developer humor and hot takes',
+  ]),
+  generalPrompt([
+    'systems programming, Rust, Go, C, Zig',
+    'databases, networking, and infrastructure',
+    'open source and developer tools',
+    'programming languages and compilers',
+    'debugging and production incident stories',
+  ]),
+  generalPrompt([
+    'launches of developer tools and frameworks',
+    'performance and optimization war stories',
+    'game development',
+    'mobile development',
+    'defensive security and vulnerability write-ups',
+  ]),
+  generalPrompt([
+    'tech industry news',
+    'startups and venture capital in tech',
+    'data science and machine learning',
+    'developer productivity and tooling',
+    'text-only programming jokes',
+  ]),
+]
 
 const REQUIRED_PROMPT = `Use X search to find the single most popular RECENT post from each of these X accounts: ${REQUIRED_HANDLES.map((h) => `@${h}`).join(', ')}.
 
@@ -211,24 +227,23 @@ async function main() {
   const apiKey = loadApiKey()
   console.log('Asking Grok to search X for pinned accounts and popular programming posts...')
 
-  const [requiredRaw, generalRawA, generalRawB] = await Promise.all([
+  const [requiredRaw, ...generalRaws] = await Promise.all([
     askGrok(apiKey, REQUIRED_PROMPT, { type: 'x_search', allowed_x_handles: REQUIRED_HANDLES }),
-    askGrok(apiKey, GENERAL_PROMPT_A, { type: 'x_search' }),
-    askGrok(apiKey, GENERAL_PROMPT_B, { type: 'x_search' }),
+    ...GENERAL_PROMPTS.map((p) => askGrok(apiKey, p, { type: 'x_search' })),
   ])
 
   // Pinned posts keep any like count; general posts need at least 100 likes.
+  // Duplicate authors are fine; duplicate tweets are not, so dedupe by URL.
   const required = normalize(requiredRaw, 1)
-  const seen = new Set(required.map((p) => p.handle.toLowerCase()))
-  const requiredHandles = new Set(seen)
-  const general = normalize([...generalRawA, ...generalRawB], 100).filter((p) => {
-    const h = p.handle.toLowerCase()
-    if (seen.has(h)) return false
-    seen.add(h)
+  const requiredHandles = new Set(required.map((p) => p.handle.toLowerCase()))
+  const seenUrls = new Set(required.map((p) => p.url))
+  const general = normalize(generalRaws.flat(), 100).filter((p) => {
+    if (!p.url || seenUrls.has(p.url)) return false
+    seenUrls.add(p.url)
     return true
   })
 
-  const posts = await verifyPosts([...required, ...general].slice(0, 55))
+  const posts = await verifyPosts([...required, ...general].slice(0, 60))
   if (posts.length === 0) throw new Error('No valid posts parsed from either request')
 
   const missing = REQUIRED_HANDLES.filter(

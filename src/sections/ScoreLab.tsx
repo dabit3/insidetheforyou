@@ -73,8 +73,7 @@ export function ScoreLab() {
       <Reveal delay={0.1}>
         <p className="lede">
           The model multiplies each predicted action by a weight and adds the results into one
-          score. These are the real weights from the open-source code. Tap the actions that you
-          take on a post and watch the score move.
+          score. These are the real weights.
         </p>
       </Reveal>
 
