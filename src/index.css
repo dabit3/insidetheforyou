@@ -923,6 +923,40 @@ body {
   .sim-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Pin the Tomorrow feed to the bottom of the screen so re-ranking is
+     visible while acting on the Today cards above it */
+  #effects {
+    overflow: visible;
+  }
+
+  .sim-tomorrow {
+    position: sticky;
+    bottom: 12px;
+    z-index: 5;
+  }
+
+  .sim-tomorrow .sim-heading {
+    margin-bottom: 0;
+    padding: 9px 14px;
+    background: var(--ink);
+    color: var(--paper);
+    opacity: 1;
+    border: 1px solid var(--ink);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .sim-tomorrow .sim-feed {
+    border-radius: 0 0 12px 12px;
+    max-height: 38vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sim-tomorrow .sim-row {
+    padding: 8px 12px;
+  }
 }
 
 .sim-heading {
@@ -1289,6 +1323,20 @@ a {
 
   .sim-summary {
     padding: 14px 16px;
+  }
+
+  /* Action effects: uniform tap targets in a 3-column grid */
+  .sim-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .sim-actions .fx-btn {
+    padding: 8px 6px;
+    font-size: 10.5px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
   }
 
   .feed-notes {

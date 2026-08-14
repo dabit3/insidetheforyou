@@ -429,7 +429,7 @@ export function ActionEffects() {
   }, [acts, today, pool])
 
   return (
-    <Section theme="light">
+    <Section id="effects" theme="light">
       <Reveal>
         <h2 className="display">
           Every interaction steers <span className="dim">tomorrow's feed.</span>
@@ -490,7 +490,7 @@ export function ActionEffects() {
           })}
         </div>
 
-        <div>
+        <div className="sim-tomorrow">
           <span className="sim-heading mono">Tomorrow: your next refresh</span>
           <div className="sim-feed">
             <AnimatePresence initial={false}>
