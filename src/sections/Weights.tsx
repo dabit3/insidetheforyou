@@ -32,9 +32,10 @@ export function Weights() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          Each predicted action has a fixed weight. The weight shows how much the algorithm cares
-          about that action. These are the real values from the open-source code. The rewards are
-          small, and the punishments are enormous.
+          Each predicted action has a fixed weight. The weight multiplies your personal predicted
+          probability of that action, never a raw count of likes or reports. These are the real
+          values from the open-source code. The rewards are small, and the punishments are
+          enormous.
         </p>
       </Reveal>
       <div style={{ marginTop: 48, maxWidth: 820 }}>
@@ -64,7 +65,10 @@ export function Weights() {
       <Reveal delay={0.2}>
         <p className="small" style={{ marginTop: 24 }}>
           The bars use a square-root scale so that the small weights stay visible. Hatched bars
-          show negative weights. The algorithm tries to not cause these actions.
+          show negative weights. The algorithm tries to not cause these actions. The negative
+          weights are huge because the actions are rare: your baseline odds of reporting a post
+          are more than 1,000× lower than your odds of liking one, so the weight has to be large
+          for the signal to matter at all.
         </p>
       </Reveal>
     </Section>

@@ -6,31 +6,37 @@ type Action = {
   id: string
   label: string
   weight: number
+  prob: number
 }
 
-// Real production weights from home-mixer/params/param.rs (Aug 2026 snapshot)
+// Real production weights from home-mixer/params/param.rs (Aug 2026 snapshot).
+// `prob` is an illustrative baseline predicted probability for a typical user
+// and post. Rare actions like report have baselines 1,000x+ lower than a like.
 const ACTIONS: Action[] = [
-  { id: 'fav', label: 'Like', weight: 0.5 },
-  { id: 'reply', label: 'Reply', weight: 5.0 },
-  { id: 'reply_mutual', label: 'Reply (mutual follow)', weight: 20.0 },
-  { id: 'repost', label: 'Repost', weight: 1.0 },
-  { id: 'quote', label: 'Quote', weight: 5.0 },
-  { id: 'share', label: 'Share', weight: 2.0 },
-  { id: 'share_dm', label: 'Share via DM', weight: 5.0 },
-  { id: 'copy_link', label: 'Copy the link', weight: 20.0 },
-  { id: 'follow', label: 'Follow the author', weight: 4.0 },
-  { id: 'click', label: 'Open the post', weight: 0.4 },
-  { id: 'video', label: 'Watch the video', weight: 0.05 },
-  { id: 'not_interested', label: '“Not interested”', weight: -43.2 },
-  { id: 'block', label: 'Block the author', weight: -31.2 },
-  { id: 'mute', label: 'Mute the author', weight: -58.8 },
-  { id: 'report', label: 'Report', weight: -234.0 },
+  { id: 'fav', label: 'Like', weight: 0.5, prob: 0.06 },
+  { id: 'reply', label: 'Reply', weight: 5.0, prob: 0.01 },
+  { id: 'reply_mutual', label: 'Reply (mutual follow)', weight: 20.0, prob: 0.02 },
+  { id: 'repost', label: 'Repost', weight: 1.0, prob: 0.01 },
+  { id: 'quote', label: 'Quote', weight: 5.0, prob: 0.004 },
+  { id: 'share', label: 'Share', weight: 2.0, prob: 0.005 },
+  { id: 'share_dm', label: 'Share via DM', weight: 5.0, prob: 0.003 },
+  { id: 'copy_link', label: 'Copy the link', weight: 20.0, prob: 0.002 },
+  { id: 'follow', label: 'Follow the author', weight: 4.0, prob: 0.001 },
+  { id: 'click', label: 'Open the post', weight: 0.4, prob: 0.05 },
+  { id: 'video', label: 'Watch the video', weight: 0.05, prob: 0.2 },
+  { id: 'not_interested', label: '“Not interested”', weight: -43.2, prob: 0.0015 },
+  { id: 'block', label: 'Block the author', weight: -31.2, prob: 0.0002 },
+  { id: 'mute', label: 'Mute the author', weight: -58.8, prob: 0.0004 },
+  { id: 'report', label: 'Report', weight: -234.0, prob: 0.00004 },
 ]
 
-const MAX_ABS = 234
+type Mode = 'certain' | 'typical'
+
+const MAX_ABS: Record<Mode, number> = { certain: 234, typical: 0.6 }
 
 export function ScoreLab() {
   const [on, setOn] = useState<Set<string>>(new Set(['fav', 'reply']))
+  const [mode, setMode] = useState<Mode>('certain')
   const [aura, setAura] = useState<'good' | 'bad' | null>(null)
   const [auraKey, setAuraKey] = useState(0)
 
@@ -61,7 +67,10 @@ export function ScoreLab() {
   }, [aura, auraKey])
 
   const selected = ACTIONS.filter((a) => on.has(a.id))
-  const score = selected.reduce((s, a) => s + a.weight, 0)
+  const score = selected.reduce(
+    (s, a) => s + a.weight * (mode === 'certain' ? 1 : a.prob),
+    0
+  )
 
   return (
     <Section id="scoring" theme="light">
@@ -72,8 +81,9 @@ export function ScoreLab() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="lede">
-          The model multiplies each predicted action by a weight and adds the results into one
-          score. These are the real weights.
+          For each post, the model predicts <em>your</em> personal probability of taking each
+          action, multiplies each probability by a weight, and adds the results into one score.
+          The weights never touch raw like or report counts. These are the real weights.
         </p>
       </Reveal>
 
@@ -104,6 +114,24 @@ export function ScoreLab() {
         ))}
       </div>
 
+      <div style={{ marginTop: 24, display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span className="mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.5 }}>
+          Predicted probability
+        </span>
+        <button
+          className={`pill-toggle ${mode === 'certain' ? 'on' : ''}`}
+          onClick={() => setMode('certain')}
+        >
+          Certain (100%)
+        </button>
+        <button
+          className={`pill-toggle ${mode === 'typical' ? 'on' : ''}`}
+          onClick={() => setMode('typical')}
+        >
+          Typical baseline odds
+        </button>
+      </div>
+
       {aura && <div key={`flash-${auraKey}`} className={`aura-flash ${aura}`} />}
 
       <div
@@ -122,10 +150,10 @@ export function ScoreLab() {
             className="display score-value"
           >
             {score > 0 ? '+' : ''}
-            {Number(score.toFixed(2))}
+            {Number(score.toFixed(mode === 'certain' ? 2 : 3))}
           </motion.span>
           <span className="small">
-            {score >= 20
+            {score >= (mode === 'certain' ? 20 : 0.3)
               ? 'straight to the top of your feed'
               : score > 0
                 ? 'competes for a spot in your feed'
@@ -137,7 +165,7 @@ export function ScoreLab() {
         <div className="bar-track score-bar">
           <motion.div
             animate={{
-              width: `${Math.min(Math.abs(score) / MAX_ABS, 1) * 100}%`,
+              width: `${Math.min(Math.abs(score) / MAX_ABS[mode], 1) * 100}%`,
             }}
             transition={{ type: 'spring', stiffness: 120, damping: 20 }}
             style={{
@@ -152,8 +180,11 @@ export function ScoreLab() {
         </div>
       </div>
       <p className="small" style={{ marginTop: 20, maxWidth: 820 }}>
-        Notice the asymmetry: one report (−234) cancels 468 likes (+0.5 each). The penalty for
-        one bad experience is far larger than the reward for one good experience.
+        The negative weights look enormous, but they multiply your <em>predicted probability</em>{' '}
+        of each action, not raw counts. One report does not erase hundreds of likes. Your baseline
+        odds of reporting a post are more than 1,000× lower than your odds of liking one, so the
+        −234 only bites when the model genuinely expects you to report. Switch to “Typical
+        baseline odds” above to see how small each contribution really is.
       </p>
     </Section>
   )
