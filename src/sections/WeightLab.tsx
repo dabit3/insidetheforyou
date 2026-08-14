@@ -136,6 +136,9 @@ export function WeightLab() {
   const nameCache = useRef(new Map<string, string>())
   const callCount = useRef(0)
   const isDefault = WEIGHT_DEFS.every((d) => weights[d.id] === d.def)
+  const isPreset = PRESETS.some(([, , preset]) =>
+    WEIGHT_DEFS.every((d) => weights[d.id] === preset[d.id])
+  )
 
   const cooldownLeft = Math.max(0, Math.ceil((cooldownUntil - now) / 1000))
 
@@ -152,7 +155,7 @@ export function WeightLab() {
   const alreadyNamed = namedKey === configKey
 
   const nameIt = async () => {
-    if (naming || cooldownLeft > 0 || isDefault || alreadyNamed) return
+    if (naming || cooldownLeft > 0 || isDefault || isPreset || alreadyNamed) return
     const cached = nameCache.current.get(configKey)
     if (cached) {
       setName(cached)
@@ -238,7 +241,7 @@ export function WeightLab() {
             </motion.div>
           </AnimatePresence>
         </div>
-        {!isDefault && !alreadyNamed && (
+        {!isDefault && !isPreset && !alreadyNamed && (
           <button
             className="preset-btn"
             onClick={nameIt}
