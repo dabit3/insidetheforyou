@@ -27,9 +27,9 @@ const FEED: FeedPost[] = [
     body: 'Just shipped the new onboarding flow. Six months of work, live for everyone today.',
     stats: ['214', '186', '2.4K', '148K'],
     notes: [
-      ['+12.4 · you two follow each other, so a likely reply is worth 20 instead of 5', 'good'],
-      ['+0.9 · you liked 8 of her last 10 posts', 'good'],
-      ['in-network · served instantly by Thunder', 'info'],
+      ['+12.4: you two follow each other, so a likely reply is worth 20 instead of 5', 'good'],
+      ['+0.9: you liked 8 of her last 10 posts', 'good'],
+      ['in-network: served instantly by Thunder', 'info'],
     ],
   },
   {
@@ -42,9 +42,9 @@ const FEED: FeedPost[] = [
     body: 'The complete guide to pricing your SaaS product. Everything I learned from 40 launches (thread)',
     stats: ['96', '412', '3.1K', '512K'],
     notes: [
-      ['+4.6 · people with your tastes copy this link, and copy-link is worth +20', 'good'],
-      ['×0.75 · out-of-network discount applied, it ranked high anyway', 'bad'],
-      ['discovery · found by Phoenix, this account is new to you', 'info'],
+      ['+4.6: people with your tastes copy this link, and copy-link is worth +20', 'good'],
+      ['×0.75: out-of-network discount applied, it ranked high anyway', 'bad'],
+      ['discovery: found by Phoenix, this account is new to you', 'info'],
     ],
   },
   {
@@ -58,8 +58,8 @@ const FEED: FeedPost[] = [
     video: true,
     stats: ['1.1K', '8.7K', '54K', '2.1M'],
     notes: [
-      ['+2.1 · you watched 3 animal videos to the end this week', 'good'],
-      ['P(watch) = 0.81 · the model expects you to finish this one too', 'info'],
+      ['+2.1: you watched 3 animal videos to the end this week', 'good'],
+      ['P(watch) = 0.81: the model expects you to finish this one too', 'info'],
     ],
   },
   {
@@ -72,7 +72,7 @@ const FEED: FeedPost[] = [
     body: 'Follow-up: the 5 mistakes we made building it, so you don\u2019t have to.',
     stats: ['58', '44', '890', '61K'],
     notes: [
-      ['×0.5 · second post from Sara this refresh, author diversity decay', 'bad'],
+      ['×0.5: second post from Sara this refresh, author diversity decay', 'bad'],
       ['it still outscored every post below it', 'info'],
     ],
   },
@@ -142,7 +142,7 @@ export function DemoFeed() {
                 <div className="tweet-head">
                   <span className="tweet-name">{p.name}</span>
                   <span className="tweet-meta">
-                    {p.handle} · {p.time}
+                    {p.handle} {p.time}
                   </span>
                 </div>
                 <p className="tweet-body">{p.body}</p>
@@ -423,7 +423,7 @@ export function ActionEffects() {
     if (reportedTopics.size > 0)
       parts.push(`report sent: ${[...reportedTopics].join(', ')} buried`)
     const summary =
-      parts.join(' · ') || 'nothing yet. act on a post to start training it.'
+      parts.join(', ') || 'nothing yet. act on a post to start training it.'
 
     return { ranked, summary }
   }, [acts, today, pool])

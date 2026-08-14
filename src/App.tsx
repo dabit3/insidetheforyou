@@ -143,9 +143,9 @@ function Sources() {
       <div style={{ marginTop: 48, maxWidth: 760 }}>
         {(
           [
-            ['Thunder · people you follow', 1200],
-            ['Phoenix · ML discovery', 1000],
-            ['SimClusters · taste communities', 800],
+            ['Thunder: people you follow', 1200],
+            ['Phoenix: ML discovery', 1000],
+            ['SimClusters: taste communities', 800],
           ] as [string, number][]
         ).map(([label, n], i) => (
           <div className="weight-row" key={label}>
@@ -176,7 +176,7 @@ function Sources() {
           transition={{ duration: 0.6 }}
           style={{ padding: 32 }}
         >
-          <span className="tag">In-network · “Thunder”</span>
+          <span className="tag">In-network: “Thunder”</span>
           <h3 className="cell-title" style={{ fontSize: 24 }}>
             People you follow
           </h3>
@@ -193,7 +193,7 @@ function Sources() {
           transition={{ duration: 0.6, delay: 0.15 }}
           style={{ padding: 32 }}
         >
-          <span className="tag">Out-of-network · “Phoenix” + “SimClusters”</span>
+          <span className="tag">Out-of-network: “Phoenix” + “SimClusters”</span>
           <h3 className="cell-title" style={{ fontSize: 24 }}>
             People you don't (yet)
           </h3>
