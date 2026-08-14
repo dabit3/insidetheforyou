@@ -438,7 +438,7 @@ export function ActionEffects() {
       <Reveal delay={0.1}>
         <p className="lede">
           These are real posts from X. Act on today's feed and watch tomorrow's feed re-rank
-          itself.
+          itself. Only actions on posts served in your For You feed train the ranker.
         </p>
       </Reveal>
 
@@ -576,7 +576,10 @@ export function ActionEffects() {
       <Reveal delay={0.2}>
         <p className="small" style={{ marginTop: 24 }}>
           Negative signals are much stronger than positive signals. A few "not interested" taps
-          change your feed faster than one hundred likes.
+          change your feed faster than one hundred likes. And this loop is hard to game: actions
+          only count on posts the algorithm served to you in your Home timeline. Navigating
+          straight to a post from a link, say a group chat coordinating likes, has no ranking
+          impact, and there is no reliable way to manufacture a post into someone's feed.
         </p>
       </Reveal>
     </Section>

@@ -334,9 +334,12 @@ export function WeightLab() {
 
       <Reveal delay={0.2}>
         <p className="small" style={{ marginTop: 32 }}>
-          Each score is the sum of probability × weight across all actions. The real ranker runs
-          the same formula. Try Rage merchant: when negative feedback is zero, the angriest post
-          moves to the top. The weights do quiet moderation work all day.
+          Each score is the sum of your predicted probability × weight across all actions. The
+          weights never multiply raw engagement counts. The real ranker runs the same formula.
+          Try Rage merchant: when negative feedback is zero, the angriest post moves to the top.
+          The weights do quiet moderation work all day. Notice the spam post: even a −234 report
+          weight barely moves its score, because the predicted probabilities it multiplies are
+          tiny.
         </p>
       </Reveal>
     </Section>

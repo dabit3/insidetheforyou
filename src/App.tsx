@@ -392,7 +392,11 @@ function Takeaways() {
     ],
     [
       'Negative feedback is powerful',
-      '“Not interested”, mute, and block carry large negative weights. One report outweighs hundreds of likes. Use them. They work.',
+      '“Not interested”, mute, and block carry large negative weights, applied to your predicted odds of taking them. Because those actions are rare, the weights have to be large to register. Use them. They work.',
+    ],
+    [
+      'It is hard to game',
+      'Actions only count when the post was served in your For You feed. Opening a post directly from a link, say from a group chat coordinating engagement, has no ranking effect, and nobody can reliably force a post into your timeline.',
     ],
     [
       'Your feed resets constantly',
