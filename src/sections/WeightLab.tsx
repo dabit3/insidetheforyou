@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Reveal, Section } from '../components/Reveal'
 
 type WeightDef = {
@@ -109,6 +109,45 @@ const PRESETS: [string, string, Record<string, number>][] = [
   ],
 ]
 
+// Names the user's custom algorithm from the shape of the knobs.
+// Runs locally: instant, free, and deterministic for a given configuration.
+function algoName(w: Record<string, number>): string {
+  const isDefault = WEIGHT_DEFS.every((d) => w[d.id] === d.def)
+  if (isDefault) return 'Just Regular X'
+
+  const negIds = ['notInterested', 'block', 'mute', 'report']
+  const negOff = negIds.every((id) => w[id] === 0)
+  const negMaxed =
+    w.notInterested <= -290 && w.block <= -290 && w.mute <= -290 && w.report <= -580
+
+  if (negOff && (w.reply >= 20 || w.quote >= 20)) return 'The Rage Engine'
+  if (negOff) return 'No Brakes Mode'
+  if (negMaxed && (w.video >= 2 || w.like >= 3)) return 'The Zen Garden'
+  if (negMaxed) return 'The Censor'
+  if (w.video >= 3) return 'Brainrot Maximizer'
+  if (w.copyLink >= 45) return 'The Link Goblin'
+  if (w.reply >= 18 && w.quote >= 18) return 'The Argument Factory'
+  if (w.follow >= 15) return 'The Networking Event'
+  if (w.like >= 6) return 'The Dopamine Dispenser'
+  if (w.click >= 3) return 'The Clickbait Machine'
+  if (w.share >= 12) return 'Patient Zero'
+  if (w.report <= -450) return 'Judge, Jury, Executioner'
+  if (w.repost >= 7) return 'The Echo Chamber'
+
+  // Anything else gets a stable name from a hash of the configuration.
+  const adjectives = [
+    'Feral', 'Polite', 'Unhinged', 'Curated', 'Chaotic', 'Wholesome',
+    'Spicy', 'Sleepy', 'Ravenous', 'Suspicious', 'Humble', 'Dramatic',
+  ]
+  const nouns = [
+    'Algorithm', 'Timeline', 'Doomscroller', 'Recommender', 'Ranker',
+    'Mixer', 'Oracle', 'Curator', 'Feed', 'Machine',
+  ]
+  let h = 0
+  for (const d of WEIGHT_DEFS) h = (h * 31 + Math.round(w[d.id] * 10) + 7) % 100003
+  return `The ${adjectives[h % adjectives.length]} ${nouns[Math.floor(h / 7) % nouns.length]}`
+}
+
 export function WeightLab() {
   const [weights, setWeights] = useState<Record<string, number>>(DEFAULTS)
 
@@ -123,6 +162,7 @@ export function WeightLab() {
   }, [weights])
 
   const maxAbs = Math.max(...ranked.map((p) => Math.abs(p.score)), 0.001)
+  const name = useMemo(() => algoName(weights), [weights])
 
   return (
     <Section id="playground" theme="dark">
@@ -140,11 +180,35 @@ export function WeightLab() {
       </Reveal>
 
       <div style={{ marginTop: 40, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-        {PRESETS.map(([name, desc, preset]) => (
-          <button key={name} className="preset-btn" onClick={() => setWeights(preset)} title={desc}>
-            {name}
+        {PRESETS.map(([presetName, desc, preset]) => (
+          <button
+            key={presetName}
+            className="preset-btn"
+            onClick={() => setWeights(preset)}
+            title={desc}
+          >
+            {presetName}
           </button>
         ))}
+      </div>
+
+      <div className="algo-name">
+        <span className="mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', opacity: 0.5 }}>
+          You built
+        </span>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={name}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="display"
+            style={{ fontSize: 'clamp(22px, 3vw, 32px)', marginTop: 4 }}
+          >
+            {name}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       <div className="playground-grid" style={{ marginTop: 40 }}>
