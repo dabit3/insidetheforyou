@@ -109,45 +109,6 @@ const PRESETS: [string, string, Record<string, number>][] = [
   ],
 ]
 
-// Local fallback naming, used while Grok thinks and when the API is unreachable.
-// Deterministic for a given configuration.
-function algoName(w: Record<string, number>): string {
-  const isDefault = WEIGHT_DEFS.every((d) => w[d.id] === d.def)
-  if (isDefault) return 'Just Regular X'
-
-  const negIds = ['notInterested', 'block', 'mute', 'report']
-  const negOff = negIds.every((id) => w[id] === 0)
-  const negMaxed =
-    w.notInterested <= -290 && w.block <= -290 && w.mute <= -290 && w.report <= -580
-
-  if (negOff && (w.reply >= 20 || w.quote >= 20)) return 'The Rage Engine'
-  if (negOff) return 'No Brakes Mode'
-  if (negMaxed && (w.video >= 2 || w.like >= 3)) return 'The Zen Garden'
-  if (negMaxed) return 'The Censor'
-  if (w.video >= 3) return 'Brainrot Maximizer'
-  if (w.copyLink >= 45) return 'The Link Goblin'
-  if (w.reply >= 18 && w.quote >= 18) return 'The Argument Factory'
-  if (w.follow >= 15) return 'The Networking Event'
-  if (w.like >= 6) return 'The Dopamine Dispenser'
-  if (w.click >= 3) return 'The Clickbait Machine'
-  if (w.share >= 12) return 'Patient Zero'
-  if (w.report <= -450) return 'Judge, Jury, Executioner'
-  if (w.repost >= 7) return 'The Echo Chamber'
-
-  // Anything else gets a stable name from a hash of the configuration.
-  const adjectives = [
-    'Feral', 'Polite', 'Unhinged', 'Curated', 'Chaotic', 'Wholesome',
-    'Spicy', 'Sleepy', 'Ravenous', 'Suspicious', 'Humble', 'Dramatic',
-  ]
-  const nouns = [
-    'Algorithm', 'Timeline', 'Doomscroller', 'Recommender', 'Ranker',
-    'Mixer', 'Oracle', 'Curator', 'Feed', 'Machine',
-  ]
-  let h = 0
-  for (const d of WEIGHT_DEFS) h = (h * 31 + Math.round(w[d.id] * 10) + 7) % 100003
-  return `The ${adjectives[h % adjectives.length]} ${nouns[Math.floor(h / 7) % nouns.length]}`
-}
-
 export function WeightLab() {
   const [weights, setWeights] = useState<Record<string, number>>(DEFAULTS)
 
@@ -163,12 +124,12 @@ export function WeightLab() {
 
   const maxAbs = Math.max(...ranked.map((p) => Math.abs(p.score)), 0.001)
 
-  // Naming: the local generator names instantly; the button asks Grok.
-  // Client-side exponential backoff after the first few calls, and the
-  // Worker enforces real rate limits on top of this.
-  const localName = useMemo(() => algoName(weights), [weights])
+  // Naming: the name only changes when the user asks Grok. Moving the knobs
+  // never renames on its own. Client-side exponential backoff after the first
+  // few calls, and the Worker enforces real rate limits on top of this.
   const configKey = useMemo(() => JSON.stringify(weights), [weights])
-  const [aiNames, setAiNames] = useState<Record<string, string>>({})
+  const [name, setName] = useState('Just Regular X')
+  const [namedKey, setNamedKey] = useState<string | null>(null)
   const [naming, setNaming] = useState(false)
   const [cooldownUntil, setCooldownUntil] = useState(0)
   const [now, setNow] = useState(() => Date.now())
@@ -187,13 +148,15 @@ export function WeightLab() {
     return () => clearInterval(interval)
   }, [cooldownUntil])
 
-  const alreadyNamed = Boolean(aiNames[configKey])
+  // The current configuration is named when its key matches the last naming.
+  const alreadyNamed = namedKey === configKey
 
   const nameIt = async () => {
     if (naming || cooldownLeft > 0 || isDefault || alreadyNamed) return
     const cached = nameCache.current.get(configKey)
     if (cached) {
-      setAiNames((prev) => ({ ...prev, [configKey]: cached }))
+      setName(cached)
+      setNamedKey(configKey)
       return
     }
     setNaming(true)
@@ -211,7 +174,8 @@ export function WeightLab() {
       const data = (await res.json()) as { name?: string }
       if (data.name) {
         nameCache.current.set(configKey, data.name)
-        setAiNames((prev) => ({ ...prev, [configKey]: data.name as string }))
+        setName(data.name)
+        setNamedKey(configKey)
       }
       // First 3 calls are free; after that the wait doubles: 2s, 4s, 8s... up to 60s.
       callCount.current += 1
@@ -221,13 +185,11 @@ export function WeightLab() {
         setNow(Date.now())
       }
     } catch {
-      /* keep the local fallback name */
+      /* keep the previous name */
     } finally {
       setNaming(false)
     }
   }
-
-  const name = aiNames[configKey] ?? localName
 
   return (
     <Section id="playground" theme="dark">

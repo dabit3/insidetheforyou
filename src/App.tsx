@@ -21,7 +21,7 @@ function Nav() {
         <a href="#top" className="mono nav-brand">
           insidetheforyou
         </a>
-        <div style={{ flex: 1 }} />
+        <div className="nav-spacer" />
         {NAV.map(([label, href]) => (
           <a key={href} href={href} className="mono nav-link">
             {label}
