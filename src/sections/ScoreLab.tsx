@@ -67,7 +67,7 @@ export function ScoreLab() {
     <Section id="scoring" theme="light">
       <Reveal>
         <h2 className="display">
-          Not all engagement <span className="dim">is worth the same.</span>
+          Not all engagement <span className="dim">is equal.</span>
         </h2>
       </Reveal>
       <Reveal delay={0.1}>
