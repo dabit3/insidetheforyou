@@ -532,6 +532,11 @@ body {
   font-size: 56px;
 }
 
+.bar-track.score-bar {
+  margin-top: 20px;
+  height: 14px;
+}
+
 .score-card.aura-good {
   animation: aura-ascend 1.1s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -1254,12 +1259,28 @@ a {
   }
 
   /* Cards and panels: tighter padding on small screens */
+  /* Scoring lab: pin the score card to the bottom of the screen so the
+     score stays visible while toggling actions above it */
+  #scoring {
+    overflow: visible;
+  }
+
   .score-card {
-    padding: 20px;
+    position: sticky;
+    bottom: 12px;
+    z-index: 5;
+    padding: 14px 16px;
+    border-radius: 12px;
+    box-shadow: 4px 4px 0 var(--ink);
   }
 
   .score-value {
-    font-size: 40px;
+    font-size: 32px;
+  }
+
+  .bar-track.score-bar {
+    margin-top: 12px;
+    height: 10px;
   }
 
   .tweet {

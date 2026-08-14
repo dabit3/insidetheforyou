@@ -134,7 +134,7 @@ export function ScoreLab() {
                   : 'buried, you will almost never see posts like this'}
           </span>
         </div>
-        <div className="bar-track" style={{ marginTop: 20, height: 14 }}>
+        <div className="bar-track score-bar">
           <motion.div
             animate={{
               width: `${Math.min(Math.abs(score) / MAX_ABS, 1) * 100}%`,
@@ -150,11 +150,11 @@ export function ScoreLab() {
             }}
           />
         </div>
-        <p className="small" style={{ marginTop: 20 }}>
-          Notice the asymmetry: one report (−234) cancels 468 likes (+0.5 each). The penalty for
-          one bad experience is far larger than the reward for one good experience.
-        </p>
       </div>
+      <p className="small" style={{ marginTop: 20, maxWidth: 820 }}>
+        Notice the asymmetry: one report (−234) cancels 468 likes (+0.5 each). The penalty for
+        one bad experience is far larger than the reward for one good experience.
+      </p>
     </Section>
   )
 }
